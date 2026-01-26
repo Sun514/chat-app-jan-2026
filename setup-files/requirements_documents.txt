@@ -1,0 +1,57 @@
+# Document Parsing & Vector Storage Dependencies for Red Pajama
+# Add these to your existing requirements.txt
+
+# ============================================================================
+# Document Parsing
+# ============================================================================
+
+# Microsoft Office formats
+python-docx>=1.1.0        # Word documents (.docx)
+python-pptx>=0.6.23       # PowerPoint presentations (.pptx)
+openpyxl>=3.1.2           # Excel spreadsheets (.xlsx)
+
+# PDF parsing
+pdfplumber>=0.10.3        # Primary PDF parser (good for tables)
+PyMuPDF>=1.23.0           # Fallback PDF parser (fitz)
+
+# Data processing
+pandas>=2.0.0             # Excel/CSV data analysis
+
+# ============================================================================
+# Vector Embeddings
+# ============================================================================
+
+# Embedding model (all-MiniLM-L6-v2 produces 384-dim vectors)
+sentence-transformers>=2.2.0
+
+# PostgreSQL with vector support (you likely have these)
+asyncpg>=0.29.0           # Async PostgreSQL driver
+pgvector>=0.2.0           # pgvector Python client (optional helper)
+
+# ============================================================================
+# System dependencies (install via apt/dnf)
+# ============================================================================
+#
+# LibreOffice (for converting legacy formats .doc, .ppt, .xls):
+#   sudo apt install libreoffice-common libreoffice-writer libreoffice-calc libreoffice-impress
+#   or: sudo dnf install libreoffice
+#
+# Pandoc (fallback text extraction):
+#   sudo apt install pandoc
+#   or: sudo dnf install pandoc
+#
+# unrtf (RTF fallback):
+#   sudo apt install unrtf
+#
+# ============================================================================
+# PostgreSQL pgvector extension
+# ============================================================================
+#
+# Install pgvector in PostgreSQL:
+#   CREATE EXTENSION IF NOT EXISTS vector;
+#
+# If not available, install from source:
+#   cd /tmp
+#   git clone https://github.com/pgvector/pgvector.git
+#   cd pgvector
+#   make && sudo make install

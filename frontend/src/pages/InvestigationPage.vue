@@ -16,6 +16,7 @@
         </div>
       </div>
       <div class="top-actions">
+        <RouterLink class="btn ghost" to="/collections">Document collections</RouterLink>
         <RouterLink class="btn ghost" to="/investigations">Back to cases</RouterLink>
       </div>
     </header>
@@ -46,6 +47,54 @@
       </section>
 
       <main class="workspace">
+        <section class="panel collection-panel reveal">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">Document collections</p>
+              <h2>Attach shared folders</h2>
+            </div>
+            <span class="chip muted">Shared</span>
+          </div>
+
+          <div class="collection-panel-grid">
+            <div class="collection-picker">
+              <p class="collection-label">Available folders</p>
+              <div v-if="collectionsState.items.length === 0" class="empty">
+                No collections yet. Create one to share files across investigations.
+              </div>
+              <div v-else class="collection-list">
+                <label v-for="collection in collectionsState.items" :key="collection.id" class="collection-option">
+                  <input
+                    type="checkbox"
+                    :checked="isCollectionSelected(collection.id)"
+                    @change="toggleCollection(collection.id)"
+                  />
+                  <div>
+                    <h4>{{ collection.name }}</h4>
+                    <p>{{ collection.files.length }} files · {{ collection.description || "No description" }}</p>
+                  </div>
+                </label>
+              </div>
+              <RouterLink class="btn ghost" to="/collections">Manage collections</RouterLink>
+            </div>
+
+            <div class="collection-preview">
+              <p class="collection-label">Included files</p>
+              <div v-if="selectedCollectionFiles.length === 0" class="empty">
+                Select a folder to surface shared evidence here.
+              </div>
+              <div v-else class="collection-files">
+                <div v-for="file in selectedCollectionFiles" :key="file.id" class="collection-file">
+                  <div>
+                    <h4>{{ file.name }}</h4>
+                    <p>{{ file.collectionName }} · {{ file.sizeLabel }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section class="evidence-row">
           <section class="panel intake reveal">
             <div class="panel-head">
@@ -189,7 +238,9 @@ import {
   getInvestigation,
   setLastQuery,
   updateInvestigation,
+  toggleInvestigationCollection,
 } from "../stores/investigations";
+import { state as collectionsState } from "../stores/documentCollections";
 
 const route = useRoute();
 
@@ -220,6 +271,28 @@ const searchForm = reactive({
 });
 
 const investigation = ref(getInvestigation(route.params.id));
+
+const isCollectionSelected = (collectionId) => {
+  if (!investigation.value) return false;
+  return (investigation.value.collectionIds || []).includes(collectionId);
+};
+
+const toggleCollection = (collectionId) => {
+  if (!investigation.value) return;
+  toggleInvestigationCollection(investigation.value.id, collectionId);
+};
+
+const selectedCollectionFiles = computed(() => {
+  if (!investigation.value) return [];
+  const selectedIds = investigation.value.collectionIds || [];
+  const entries = collectionsState.items.filter((item) => selectedIds.includes(item.id));
+  return entries.flatMap((collection) =>
+    collection.files.map((file) => ({
+      ...file,
+      collectionName: collection.name,
+    }))
+  );
+});
 
 const healthSummary = computed(() => {
   if (!health.value) return "Not checked";

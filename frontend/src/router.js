@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import InvestigationsPage from "./pages/InvestigationsPage.vue";
 import InvestigationPage from "./pages/InvestigationPage.vue";
+import DocumentCollectionsPage from "./pages/DocumentCollectionsPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -8,6 +9,7 @@ const router = createRouter({
     { path: "/", redirect: "/investigations" },
     { path: "/investigations", component: InvestigationsPage },
     { path: "/investigations/:id", component: InvestigationPage },
+    { path: "/collections", component: DocumentCollectionsPage },
   ],
 });
 

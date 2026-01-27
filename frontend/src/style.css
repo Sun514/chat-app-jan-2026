@@ -35,7 +35,8 @@
 }
 
 .investigation,
-.case-hub {
+.case-hub,
+.collections {
   position: relative;
   min-height: 100vh;
   padding: 2.5rem clamp(1.5rem, 3vw, 4rem) 4rem;
@@ -308,6 +309,10 @@
   cursor: pointer;
 }
 
+.dropzone.compact {
+  padding: 1rem 1.2rem;
+}
+
 .dropzone input {
   display: none;
 }
@@ -357,6 +362,10 @@ textarea {
 }
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
   border: none;
   border-radius: 999px;
   padding: 0.85rem 1.5rem;
@@ -496,6 +505,70 @@ textarea {
   gap: 1.2rem;
 }
 
+.collection-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.collection-card {
+  background: var(--panel-strong);
+  border-radius: 24px;
+  padding: 1.8rem;
+  border: 1px solid rgba(12, 17, 24, 0.08);
+  box-shadow: var(--shadow);
+  display: grid;
+  gap: 1.4rem;
+}
+
+.collection-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.collection-meta {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.collection-upload {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.collection-files {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.collection-file {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(12, 17, 24, 0.08);
+  padding: 0.85rem 0.95rem;
+  background: #fff;
+}
+
+.collection-file h4 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.collection-file p {
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
 .case-card {
   background: var(--panel-strong);
   border-radius: 22px;
@@ -626,6 +699,63 @@ textarea {
   color: #c0392b;
 }
 
+.collection-panel {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.collection-panel-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.6rem;
+}
+
+.collection-picker,
+.collection-preview {
+  display: grid;
+  gap: 1rem;
+}
+
+.collection-label {
+  margin: 0;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.collection-list {
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.collection-option {
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+  border-radius: 16px;
+  border: 1px solid rgba(12, 17, 24, 0.08);
+  padding: 0.75rem 0.9rem;
+  background: #fff;
+  cursor: pointer;
+}
+
+.collection-option input {
+  margin-top: 0.3rem;
+}
+
+.collection-option h4 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.collection-option p {
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
 .footer {
   position: relative;
   z-index: 1;
@@ -678,6 +808,10 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .collection-panel-grid {
+    grid-template-columns: 1fr;
+  }
+
   .topbar {
     flex-direction: column;
     align-items: flex-start;
@@ -712,6 +846,11 @@ textarea {
   .dropzone {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .collection-upload {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 

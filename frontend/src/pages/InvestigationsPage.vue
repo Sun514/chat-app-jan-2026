@@ -15,7 +15,9 @@
           <p class="brand-subtitle">Manage active investigations</p>
         </div>
       </div>
-      <div class="top-actions"></div>
+      <div class="top-actions">
+        <RouterLink class="btn ghost" to="/collections">Document collections</RouterLink>
+      </div>
     </header>
 
     <section class="hub-hero">

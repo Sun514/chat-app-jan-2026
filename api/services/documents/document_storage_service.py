@@ -114,14 +114,21 @@ class DocumentStorageService:
             logger.error(f"Failed to parse document {filename}: {result.error}")
             return None
         
+        if not result.content.chunks:
+            logger.error(f"No chunks extracted from document {filename}")
+            return None
+        
         # Check for duplicate by file hash
         existing = await self._check_duplicate(
             result.metadata.file_hash,
             investigation_id
         )
         if existing:
-            logger.info(f"Document already exists: {existing}")
-            return existing
+            logger.info(f"Replacing existing document: {existing}")
+            deleted = await self.delete_document(existing)
+            if not deleted:
+                logger.error(f"Failed to delete existing document: {existing}")
+                return None
         
         # Store original file in S3 if configured
         s3_key = None

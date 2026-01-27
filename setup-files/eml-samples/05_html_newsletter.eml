@@ -1,0 +1,20 @@
+From: "Product Updates" <updates@example.com>
+To: "Case Analysts" <analysts@example.com>
+Subject: January product updates
+Date: Thu, 23 Jan 2025 11:05:30 -0500
+Message-ID: <msg-05@example.com>
+MIME-Version: 1.0
+Content-Type: text/html; charset="utf-8"
+
+<html>
+  <body>
+    <h1>January updates</h1>
+    <p>Highlights:</p>
+    <ul>
+      <li>New evidence timeline view</li>
+      <li>Improved search relevance</li>
+      <li>Faster PDF ingestion</li>
+    </ul>
+    <p>Read more at <a href="https://example.com/releases/jan">the release notes</a>.</p>
+  </body>
+</html>

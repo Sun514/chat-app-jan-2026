@@ -219,10 +219,24 @@ class DocxParser(BaseParser):
                         "rows": table_data,
                     })
             
+            # Fold tables into text so docs with only tables still chunk
+            if tables:
+                table_texts = []
+                for table in tables:
+                    rows = []
+                    for row in table["rows"]:
+                        cells = [cell.strip() for cell in row if cell and cell.strip()]
+                        if cells:
+                            rows.append(" | ".join(cells))
+                    if rows:
+                        table_texts.append("\n".join(rows))
+                if table_texts:
+                    paragraphs.extend(table_texts)
+            
             full_text = "\n\n".join(paragraphs)
             
             # Re-chunk if paragraphs are too small or large
-            if chunk_size:
+            if chunk_size and full_text:
                 chunks = self.chunk_text(full_text, "chunk", chunk_size, chunk_overlap)
             
             return full_text, chunks, tables

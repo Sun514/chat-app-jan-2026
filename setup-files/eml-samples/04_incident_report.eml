@@ -1,0 +1,15 @@
+From: "NOC" <noc@example.com>
+To: "SRE Oncall" <sre-oncall@example.com>
+Cc: "Security" <security@example.com>
+Subject: Incident #2198 - API latency spike
+Date: Wed, 22 Jan 2025 22:18:02 -0500
+Message-ID: <msg-04@example.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+
+Incident #2198 detected at 22:12 ET.
+Symptoms: API p95 latency > 3s for 12 minutes.
+Impact: 18% requests affected.
+Mitigation: scaled read replicas, cache warmed.
+
+Follow-up RCA scheduled for Friday.

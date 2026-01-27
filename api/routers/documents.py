@@ -33,12 +33,20 @@ class DocumentResponse(BaseModel):
     created_at: str
 
 
-class DocumentUploadResponse(BaseModel):
+class DocumentUploadResult(BaseModel):
     success: bool
     document_id: Optional[str] = None
     filename: str
     chunk_count: int = 0
     message: str
+
+
+class DocumentUploadBatchResponse(BaseModel):
+    success: bool
+    results: list[DocumentUploadResult]
+    total: int
+    succeeded: int
+    failed: int
 
 
 class ChunkSearchResult(BaseModel):
@@ -131,9 +139,9 @@ async def get_supported_types(
     )
 
 
-@router.post("/upload", response_model=DocumentUploadResponse)
+@router.post("/upload", response_model=DocumentUploadBatchResponse)
 async def upload_document(
-    file: UploadFile = File(...),
+    files: list[UploadFile] = File(...),
     investigation_id: Optional[str] = Form(default=None),
     chunk_size: int = Form(default=1000, ge=100, le=10000),
     chunk_overlap: int = Form(default=200, ge=0, le=1000),
@@ -150,59 +158,76 @@ async def upload_document(
     4. Stored in PostgreSQL with pgvector
     
     Supported formats: .docx, .doc, .pptx, .ppt, .xlsx, .xls, .csv,
-                       .pdf, .txt, .md, .html, .json, .xml, .rtf
+                       .pdf, .txt, .md, .html, .json, .xml, .rtf, .eml
     
     Args:
-        file: Document file to upload
+        files: Document files to upload
         investigation_id: Optional investigation to associate document with
         chunk_size: Maximum characters per text chunk (affects search granularity)
         chunk_overlap: Character overlap between chunks (maintains context)
         
     Returns:
-        Document ID and processing results
+        Processing results for all documents
     """
-    filename = file.filename or "unknown"
-    
-    # Validate file type
-    if not parser.is_supported(filename):
-        supported = ", ".join(parser.get_supported_extensions())
-        raise HTTPException(
-            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-            detail=f"Unsupported file type. Supported: {supported}",
-        )
-    
-    try:
-        # Store document with embeddings
-        doc_id = await storage.store_document(
-            file.file,
-            filename,
-            investigation_id=investigation_id,
-            chunk_size=chunk_size,
-            chunk_overlap=chunk_overlap,
-        )
-        
-        if doc_id:
-            # Get chunk count
-            chunks = await storage.get_document_chunks(doc_id)
-            return DocumentUploadResponse(
-                success=True,
-                document_id=doc_id,
+    results: list[DocumentUploadResult] = []
+    supported = ", ".join(parser.get_supported_extensions())
+
+    for file in files:
+        filename = file.filename or "unknown"
+
+        if not parser.is_supported(filename):
+            results.append(DocumentUploadResult(
+                success=False,
                 filename=filename,
-                chunk_count=len(chunks),
-                message=f"Document processed successfully with {len(chunks)} chunks",
+                chunk_count=0,
+                message=f"Unsupported file type. Supported: {supported}",
+            ))
+            continue
+
+        try:
+            doc_id = await storage.store_document(
+                file.file,
+                filename,
+                investigation_id=investigation_id,
+                chunk_size=chunk_size,
+                chunk_overlap=chunk_overlap,
             )
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Failed to process document",
-            )
-            
-    except Exception as e:
-        logger.error(f"Error uploading document: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e),
-        )
+
+            if doc_id:
+                chunks = await storage.get_document_chunks(doc_id)
+                results.append(DocumentUploadResult(
+                    success=True,
+                    document_id=doc_id,
+                    filename=filename,
+                    chunk_count=len(chunks),
+                    message=f"Document processed successfully with {len(chunks)} chunks",
+                ))
+            else:
+                results.append(DocumentUploadResult(
+                    success=False,
+                    filename=filename,
+                    chunk_count=0,
+                    message="Failed to process document",
+                ))
+        except Exception as e:
+            logger.error(f"Error uploading document {filename}: {e}")
+            results.append(DocumentUploadResult(
+                success=False,
+                filename=filename,
+                chunk_count=0,
+                message=str(e),
+            ))
+
+    succeeded = sum(1 for r in results if r.success)
+    failed = len(results) - succeeded
+
+    return DocumentUploadBatchResponse(
+        success=failed == 0,
+        results=results,
+        total=len(results),
+        succeeded=succeeded,
+        failed=failed,
+    )
 
 
 @router.get("/search", response_model=SearchResponse)

@@ -13,6 +13,7 @@ from .parsers import (
     XlsxParser,
     TextParser,
     PdfParser,
+    EmlParser,
 )
 
 logger = logging.getLogger(__name__)
@@ -36,6 +37,7 @@ class ParserRegistry:
             XlsxParser(),
             TextParser(),
             PdfParser(),
+            EmlParser(),
         ]
         
         for parser in parsers:

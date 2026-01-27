@@ -1,0 +1,17 @@
+From: "Billing" <billing@vendor.example>
+To: "Accounts Payable" <ap@redpajamalabs.example>
+Subject: Invoice INV-3841 due Feb 5
+Date: Tue, 21 Jan 2025 14:42:12 -0500
+Message-ID: <msg-02@example.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+
+Hello,
+
+Invoice INV-3841 is attached in the portal. Amount due: $4,250.00.
+Payment terms: Net 15. Due date: 2025-02-05.
+
+Please reach out if you need a copy of the PDF.
+
+Thank you,
+Billing Team

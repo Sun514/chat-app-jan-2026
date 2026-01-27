@@ -20,11 +20,20 @@ async def init_pool() -> Pool:
 
     if _pool is None:
         logger.info("Creating database connection pool...")
+        init_cb = None
+        try:
+            from pgvector.asyncpg import register_vector
+
+            init_cb = register_vector
+        except Exception as exc:
+            logger.warning(f"pgvector registration skipped: {exc}")
+
         _pool = await asyncpg.create_pool(
             dsn=settings.database_url,
             min_size=5,
             max_size=settings.database_pool_size,
             max_inactive_connection_lifetime=300,
+            init=init_cb,
         )
         logger.info("Database pool created successfully")
 

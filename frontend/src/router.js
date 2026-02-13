@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import InvestigationsPage from "./pages/InvestigationsPage.vue";
-import InvestigationPage from "./pages/InvestigationPage.vue";
+import InvestigationPage from "./pages/InvestigationPageDetails.vue";
 import DocumentCollectionsPage from "./pages/DocumentCollectionsPage.vue";
 import AuditMetricsPage from "./pages/AuditMetricsPage.vue";
 

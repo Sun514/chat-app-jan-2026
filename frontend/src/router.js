@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import InvestigationsPage from "./pages/InvestigationsPage.vue";
 import InvestigationPage from "./pages/InvestigationPage.vue";
 import DocumentCollectionsPage from "./pages/DocumentCollectionsPage.vue";
+import AuditMetricsPage from "./pages/AuditMetricsPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -10,6 +11,7 @@ const router = createRouter({
     { path: "/investigations", component: InvestigationsPage },
     { path: "/investigations/:id", component: InvestigationPage },
     { path: "/collections", component: DocumentCollectionsPage },
+    { path: "/audit", component: AuditMetricsPage },
   ],
 });
 

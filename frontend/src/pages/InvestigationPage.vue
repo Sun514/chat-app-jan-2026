@@ -9,15 +9,16 @@
 
     <header class="topbar">
       <div class="brand">
-        <div class="brand-mark">RPL</div>
+        <RouterLink class="brand-mark" to="/" aria-label="Go to home">RPL</RouterLink>
         <div>
           <p class="brand-title">{{ investigation?.name || "Investigation" }}</p>
           <p class="brand-subtitle">{{ investigation?.description || "Evidence intelligence workspace" }}</p>
         </div>
       </div>
       <div class="top-actions">
-        <RouterLink class="btn ghost" to="/collections">Document collections</RouterLink>
-        <RouterLink class="btn ghost" to="/investigations">Back to cases</RouterLink>
+        <RouterLink class="btn ghost" to="/investigations">Case hub</RouterLink>
+        <RouterLink class="btn ghost" to="/collections">Collections</RouterLink>
+        <RouterLink class="btn ghost" to="/audit">Audit metrics</RouterLink>
       </div>
     </header>
 

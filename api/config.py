@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     aws_secret_access_key: Optional[str] = None
 
     # LLM Services
-    openai_api_key: Optional[str] = None
+    openai_api_key: Optional[str] = "sk-test"
     anthropic_api_key: Optional[str] = None
 
     # Embedding

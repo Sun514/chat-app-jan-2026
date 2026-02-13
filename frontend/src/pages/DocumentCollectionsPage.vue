@@ -7,21 +7,6 @@
       <span class="noise"></span>
     </div>
 
-    <header class="topbar">
-      <div class="brand">
-        <RouterLink class="brand-mark" to="/" aria-label="Go to home">RPL</RouterLink>
-        <div>
-          <p class="brand-title">Document collections</p>
-          <p class="brand-subtitle">Organize evidence into shared folders.</p>
-        </div>
-      </div>
-      <div class="top-actions">
-        <RouterLink class="btn ghost" to="/investigations">Case hub</RouterLink>
-        <RouterLink class="btn ghost" to="/collections">Collections</RouterLink>
-        <RouterLink class="btn ghost" to="/audit">Audit metrics</RouterLink>
-      </div>
-    </header>
-
     <section class="hub-hero">
       <div class="hero-text reveal">
         <p class="eyebrow">Collection hub</p>
@@ -42,58 +27,67 @@
         </div>
       </div>
 
-      <form class="create-card reveal" @submit.prevent="create">
-        <p class="eyebrow">New folder</p>
-        <div class="field">
-          <label>Folder name</label>
-          <input type="text" v-model="form.name" placeholder="Vendor contracts" required />
-        </div>
-        <div class="field">
-          <label>Description</label>
-          <textarea v-model="form.description" rows="3" placeholder="What belongs in this collection?"></textarea>
-        </div>
-        <button class="btn primary full" type="submit">Create folder</button>
-      </form>
+      <Card class="create-card reveal">
+        <template #content>
+          <form @submit.prevent="create">
+            <p class="eyebrow">New folder</p>
+            <div class="field">
+              <label>Folder name</label>
+              <InputText v-model="form.name" placeholder="Vendor contracts" required fluid />
+            </div>
+            <div class="field">
+              <label>Description</label>
+              <Textarea v-model="form.description" rows="3" autoResize placeholder="What belongs in this collection?" fluid />
+            </div>
+            <Button class="btn primary full" type="submit" label="Create folder" />
+          </form>
+        </template>
+      </Card>
     </section>
 
     <section class="collection-grid reveal">
-      <div v-if="state.items.length === 0" class="empty-card">
-        No collections yet. Create a folder to start organizing uploads.
-      </div>
+      <Card v-if="state.items.length === 0" class="empty-card">
+        <template #content>
+          No collections yet. Create a folder to start organizing uploads.
+        </template>
+      </Card>
 
-      <article v-for="collection in state.items" :key="collection.id" class="collection-card">
+      <Card v-for="collection in state.items" :key="collection.id" class="collection-card">
+        <template #content>
         <div class="collection-header">
           <div>
             <h3>{{ collection.name }}</h3>
             <p class="case-desc">{{ collection.description || "No description yet." }}</p>
             <p class="collection-meta">Created {{ collection.createdAt }} · {{ collection.files.length }} files</p>
           </div>
-          <button class="btn ghost" @click="removeCollection(collection.id)">Remove folder</button>
+          <Button class="btn ghost" severity="secondary" variant="outlined" label="Remove folder" @click="removeCollection(collection.id)" />
         </div>
 
         <div class="collection-upload">
-          <label class="dropzone compact">
-            <input
+          <div class="upload-picker compact">
+            <FileUpload
               :key="inputKeys[collection.id] || 0"
-              type="file"
-              multiple
-              @change="(event) => onCollectionFileChange(collection.id, event)"
-              accept=".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.csv,.txt,.md,.html,.json,.xml,.rtf,.eml"
+              mode="basic"
+              name="files[]"
+              :multiple="true"
+              :customUpload="true"
+              :auto="false"
+              chooseLabel="Browse files"
+              :accept="acceptedFileTypes"
+              @select="(event) => onCollectionFileChange(collection.id, event)"
             />
             <div>
               <p>{{ uploadSummary(collection.id) }}</p>
               <span>{{ uploadSizes(collection.id) || "PDF, DOCX, TXT, CSV, EML" }}</span>
             </div>
-            <span class="btn ghost">Browse</span>
-          </label>
-          <button
-            class="btn dark"
+          </div>
+          <Button
+            class="btn primary"
             type="button"
+            label="Add to folder"
             @click="addFiles(collection.id)"
             :disabled="!uploads[collection.id] || uploads[collection.id].length === 0"
-          >
-            Add to folder
-          </button>
+          />
         </div>
 
         <div class="collection-files">
@@ -105,10 +99,11 @@
               <h4>{{ file.name }}</h4>
               <p>{{ file.sizeLabel }} · {{ file.type }} · {{ file.uploadedAt }}</p>
             </div>
-            <button class="btn ghost" @click="removeFile(collection.id, file.id)">Remove</button>
+            <Button class="btn ghost" severity="secondary" variant="outlined" label="Remove" @click="removeFile(collection.id, file.id)" />
           </div>
         </div>
-      </article>
+        </template>
+      </Card>
     </section>
 
     <footer class="footer">Red Pajama Labs · Document collections</footer>
@@ -117,7 +112,11 @@
 
 <script setup>
 import { computed, reactive } from "vue";
-import { RouterLink } from "vue-router";
+import Button from "primevue/button";
+import Card from "primevue/card";
+import FileUpload from "primevue/fileupload";
+import InputText from "primevue/inputtext";
+import Textarea from "primevue/textarea";
 import {
   state,
   createCollection,
@@ -130,6 +129,8 @@ const form = reactive({
   name: "",
   description: "",
 });
+
+const acceptedFileTypes = ".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.csv,.txt,.md,.html,.json,.xml,.rtf,.eml";
 
 const uploads = reactive({});
 const inputKeys = reactive({});
@@ -157,7 +158,7 @@ const create = () => {
 };
 
 const onCollectionFileChange = (collectionId, event) => {
-  uploads[collectionId] = Array.from(event.target.files || []);
+  uploads[collectionId] = Array.from(event.files || []);
 };
 
 const uploadSummary = (collectionId) => {

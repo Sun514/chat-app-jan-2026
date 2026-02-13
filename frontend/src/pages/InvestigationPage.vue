@@ -7,44 +7,35 @@
       <span class="noise"></span>
     </div>
 
-    <header class="topbar">
-      <div class="brand">
-        <RouterLink class="brand-mark" to="/" aria-label="Go to home">RPL</RouterLink>
-        <div>
-          <p class="brand-title">{{ investigation?.name || "Investigation" }}</p>
-          <p class="brand-subtitle">{{ investigation?.description || "Evidence intelligence workspace" }}</p>
-        </div>
-      </div>
-      <div class="top-actions">
-        <RouterLink class="btn ghost" to="/investigations">Case hub</RouterLink>
-        <RouterLink class="btn ghost" to="/collections">Collections</RouterLink>
-        <RouterLink class="btn ghost" to="/audit">Audit metrics</RouterLink>
-      </div>
-    </header>
-
     <section v-if="!investigation" class="missing-case">
       <h1>Investigation not found</h1>
       <p>Return to the case hub to create or select a case.</p>
-      <RouterLink class="btn dark" to="/investigations">Go to case hub</RouterLink>
+      <Button class="btn dark" label="Go to case hub" @click="router.push('/investigations')" />
     </section>
 
     <template v-else>
       <section class="stats-row reveal">
-        <div class="stat-card">
+        <Card class="stat-card">
+          <template #content>
           <p class="stat-label">Evidence logged</p>
           <h3>{{ investigation.documents.length }}</h3>
           <p class="stat-note">Files indexed for this case.</p>
-        </div>
-        <div class="stat-card">
+          </template>
+        </Card>
+        <Card class="stat-card">
+          <template #content>
           <p class="stat-label">Last ingest</p>
           <h3>{{ investigation.lastUploadAt }}</h3>
           <p class="stat-note">Latest upload activity.</p>
-        </div>
-        <div class="stat-card">
+          </template>
+        </Card>
+        <Card class="stat-card">
+          <template #content>
           <p class="stat-label">Query focus</p>
           <h3>{{ investigation.lastQuery }}</h3>
           <p class="stat-note">Most recent inquiry issued.</p>
-        </div>
+          </template>
+        </Card>
       </section>
 
       <main class="workspace">
@@ -65,10 +56,10 @@
               </div>
               <div v-else class="collection-list">
                 <label v-for="collection in collectionsState.items" :key="collection.id" class="collection-option">
-                  <input
-                    type="checkbox"
-                    :checked="isCollectionSelected(collection.id)"
-                    @change="toggleCollection(collection.id)"
+                  <Checkbox
+                    binary
+                    :modelValue="isCollectionSelected(collection.id)"
+                    @update:modelValue="toggleCollection(collection.id)"
                   />
                   <div>
                     <h4>{{ collection.name }}</h4>
@@ -106,34 +97,41 @@
               <span class="chip">Secure</span>
             </div>
 
-            <label class="dropzone">
-              <input
-                type="file"
-                multiple
-                @change="onFileChange"
-                accept=".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.csv,.txt,.md,.html,.json,.xml,.rtf,.eml"
-              />
+            <div class="upload-picker">
+              <FileUpload
+                :key="uploadInputKey"
+                name="files[]"
+                :multiple="true"
+                :customUpload="true"
+                :showUploadButton="false"
+                :showCancelButton="false"
+                :auto="false"
+                chooseLabel="Select evidence files"
+                :accept="acceptedFileTypes"
+                @select="onFileChange"
+              >
+                <template #empty>
+                  <p>Drop or select files</p>
+                </template>
+              </FileUpload>
               <div>
                 <p>{{ uploadSummary }}</p>
                 <span>{{ uploadForm.files.length ? uploadSizes : "PDF, DOCX, TXT, CSV, EML" }}</span>
               </div>
-              <span class="btn ghost">Browse</span>
-            </label>
+            </div>
 
             <div class="field-grid">
               <div class="field">
                 <label>Chunk size</label>
-                <input type="number" v-model.number="uploadForm.chunkSize" min="100" max="10000" />
+                <InputNumber v-model="uploadForm.chunkSize" :min="100" :max="10000" fluid />
               </div>
               <div class="field">
                 <label>Chunk overlap</label>
-                <input type="number" v-model.number="uploadForm.chunkOverlap" min="0" max="1000" />
+                <InputNumber v-model="uploadForm.chunkOverlap" :min="0" :max="1000" fluid />
               </div>
             </div>
 
-            <button class="btn primary full" @click="uploadDocument" :disabled="loading.upload || uploadForm.files.length === 0">
-              {{ loading.upload ? "Uploading..." : "Upload evidence" }}
-            </button>
+            <Button class="btn primary full" @click="uploadDocument" :disabled="loading.upload || uploadForm.files.length === 0" :label="loading.upload ? 'Uploading...' : 'Upload evidence'" />
 
             <div class="hint">
               <strong>Ingest tips:</strong> Keep chunks near 1000 tokens, and upload source documents before asking
@@ -184,33 +182,31 @@
 
           <div class="field">
             <label>Investigation query</label>
-            <textarea
+            <Textarea
               v-model="searchForm.query"
               rows="4"
+              autoResize
               placeholder="Which emails mention the contract renewal?"
               @keydown="onQueryKeydown"
-            ></textarea>
+              fluid
+            />
           </div>
 
           <div class="field-grid">
             <div class="field">
               <label>Limit</label>
-              <input type="number" v-model.number="searchForm.limit" min="1" max="100" @keydown="onQueryKeydown" />
+                <InputNumber v-model="searchForm.limit" :min="1" :max="100" @keydown="onQueryKeydown" fluid />
+              </div>
+              <div class="field">
+                <label>Similarity threshold</label>
+                <InputNumber v-model="searchForm.threshold" :min="0" :max="1" :step="0.05" :minFractionDigits="2" :maxFractionDigits="2" @keydown="onQueryKeydown" fluid />
+              </div>
             </div>
-            <div class="field">
-              <label>Similarity threshold</label>
-              <input type="number" v-model.number="searchForm.threshold" min="0" max="1" step="0.05" @keydown="onQueryKeydown" />
-            </div>
-          </div>
 
-          <div class="inline-actions">
-            <button class="btn dark" @click="runSearch" :disabled="loading.search || !searchForm.query">
-              {{ loading.search ? "Searching..." : "Run query" }}
-            </button>
-            <button class="btn ghost" @click="clearSearch" :disabled="!searchForm.query && searchResults.length === 0">
-              Clear
-            </button>
-          </div>
+            <div class="inline-actions">
+            <Button class="btn dark" @click="runSearch" :disabled="loading.search || !searchForm.query" :label="loading.search ? 'Searching...' : 'Run query'" />
+            <Button class="btn ghost" severity="secondary" variant="outlined" @click="clearSearch" :disabled="!searchForm.query && searchResults.length === 0" label="Clear" />
+            </div>
 
           <div class="results">
             <div v-if="searchResults.length === 0" class="empty">No matches yet. Run a query to surface evidence.</div>
@@ -232,8 +228,13 @@
 
 <script setup>
 import { computed, reactive, ref, watch } from "vue";
-import { useRoute } from "vue-router";
-import { RouterLink } from "vue-router";
+import { RouterLink, useRoute, useRouter } from "vue-router";
+import Button from "primevue/button";
+import Card from "primevue/card";
+import Checkbox from "primevue/checkbox";
+import FileUpload from "primevue/fileupload";
+import InputNumber from "primevue/inputnumber";
+import Textarea from "primevue/textarea";
 import {
   addDocument,
   getInvestigation,
@@ -244,6 +245,9 @@ import {
 import { state as collectionsState } from "../stores/documentCollections";
 
 const route = useRoute();
+const router = useRouter();
+const acceptedFileTypes = ".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.csv,.txt,.md,.html,.json,.xml,.rtf,.eml";
+const uploadInputKey = ref(0);
 
 const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
@@ -310,7 +314,7 @@ const formatBytes = (value) => {
 };
 
 const onFileChange = (event) => {
-  uploadForm.files = Array.from(event.target.files || []);
+  uploadForm.files = Array.from(event.files || []);
 };
 
 const pingHealth = async () => {
@@ -379,6 +383,8 @@ const uploadDocument = async () => {
     updateInvestigation(investigation.value.id, {
       lastUploadAt: new Date().toLocaleTimeString(),
     });
+    uploadForm.files = [];
+    uploadInputKey.value += 1;
   } catch (error) {
     uploadResult.value = `Upload failed: ${error.message}`;
     records.forEach((record) => {

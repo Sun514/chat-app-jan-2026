@@ -7,21 +7,6 @@
       <span class="noise"></span>
     </div>
 
-    <header class="topbar">
-      <div class="brand">
-        <RouterLink class="brand-mark" to="/" aria-label="Go to home">RPL</RouterLink>
-        <div>
-          <p class="brand-title">Red Pajama Labs</p>
-          <p class="brand-subtitle">Manage active investigations</p>
-        </div>
-      </div>
-      <div class="top-actions">
-        <RouterLink class="btn ghost" to="/investigations">Case hub</RouterLink>
-        <RouterLink class="btn ghost" to="/collections">Collections</RouterLink>
-        <RouterLink class="btn ghost" to="/audit">Audit metrics</RouterLink>
-      </div>
-    </header>
-
     <section class="hub-hero">
       <div class="hero-text reveal">
         <p class="eyebrow">Case management</p>
@@ -41,45 +26,53 @@
         </div>
       </div>
 
-      <form class="create-card reveal" @submit.prevent="create">
-        <p class="eyebrow">New investigation</p>
-        <div class="field">
-          <label>Case name</label>
-          <input type="text" v-model="form.name" placeholder="Northpoint Contract Review" required />
-        </div>
-        <div class="field">
-          <label>Owner</label>
-          <input type="text" v-model="form.owner" placeholder="Threat Intel" />
-        </div>
-        <div class="field">
-          <label>Summary</label>
-          <textarea v-model="form.description" rows="3" placeholder="What is this investigation about?"></textarea>
-        </div>
-        <button class="btn primary full" type="submit">Create investigation</button>
-      </form>
+      <Card class="create-card reveal">
+        <template #content>
+          <form @submit.prevent="create">
+            <p class="eyebrow">New investigation</p>
+            <div class="field">
+              <label>Case name</label>
+              <InputText v-model="form.name" placeholder="Northpoint Contract Review" required fluid />
+            </div>
+            <div class="field">
+              <label>Owner</label>
+              <InputText v-model="form.owner" placeholder="Threat Intel" fluid />
+            </div>
+            <div class="field">
+              <label>Summary</label>
+              <Textarea v-model="form.description" rows="3" autoResize placeholder="What is this investigation about?" fluid />
+            </div>
+            <Button class="btn primary full" type="submit" label="Create investigation" />
+          </form>
+        </template>
+      </Card>
     </section>
 
     <section class="case-grid reveal">
-      <div v-if="state.items.length === 0" class="empty-card">
+      <Card v-if="state.items.length === 0" class="empty-card">
+        <template #content>
         No investigations yet. Create one to begin.
-      </div>
-      <div v-for="item in state.items" :key="item.id" class="case-card">
-        <div>
-          <h3>{{ item.name }}</h3>
-          <p class="case-meta">Owner: {{ item.owner }}</p>
-          <p class="case-desc">{{ item.description || "No summary yet." }}</p>
-        </div>
-        <div class="case-actions">
-          <div class="case-stats">
-            <span>{{ item.documents.length }} files</span>
-            <span>Last query: {{ item.lastQuery }}</span>
+        </template>
+      </Card>
+      <Card v-for="item in state.items" :key="item.id" class="case-card">
+        <template #content>
+          <div>
+            <h3>{{ item.name }}</h3>
+            <p class="case-meta">Owner: {{ item.owner }}</p>
+            <p class="case-desc">{{ item.description || "No summary yet." }}</p>
           </div>
-          <div class="case-buttons">
-            <RouterLink class="btn dark" :to="`/investigations/${item.id}`">Open</RouterLink>
-            <button class="btn ghost" @click="remove(item.id)">Archive</button>
+          <div class="case-actions">
+            <div class="case-stats">
+              <span>{{ item.documents.length }} files</span>
+              <span>Last query: {{ item.lastQuery }}</span>
+            </div>
+            <div class="case-buttons">
+              <Button class="btn primary" label="Open" @click="open(item.id)" />
+              <Button class="btn ghost" severity="secondary" variant="outlined" label="Archive" @click="remove(item.id)" />
+            </div>
           </div>
-        </div>
-      </div>
+        </template>
+      </Card>
     </section>
 
     <footer class="footer">Red Pajama Labs · Case hub</footer>
@@ -88,8 +81,14 @@
 
 <script setup>
 import { reactive } from "vue";
-import { RouterLink } from "vue-router";
+import { useRouter } from "vue-router";
+import Button from "primevue/button";
+import Card from "primevue/card";
+import InputText from "primevue/inputtext";
+import Textarea from "primevue/textarea";
 import { state, createInvestigation, removeInvestigation } from "../stores/investigations";
+
+const router = useRouter();
 
 const form = reactive({
   name: "",
@@ -111,6 +110,10 @@ const create = () => {
 
 const remove = (id) => {
   removeInvestigation(id);
+};
+
+const open = (id) => {
+  router.push(`/investigations/${id}`);
 };
 
 </script>

@@ -7,49 +7,33 @@
       <span class="noise"></span>
     </div>
 
-    <header class="topbar">
-      <div class="brand">
-        <RouterLink class="brand-mark" to="/" aria-label="Go to home">RPL</RouterLink>
-        <div>
-          <p class="brand-title">Audit metrics</p>
-          <p class="brand-subtitle">Operational analytics and usage trends.</p>
-        </div>
-      </div>
-      <div class="top-actions">
-        <RouterLink class="btn ghost" to="/investigations">Case hub</RouterLink>
-        <RouterLink class="btn ghost" to="/collections">Collections</RouterLink>
-        <RouterLink class="btn ghost" to="/audit">Audit metrics</RouterLink>
-      </div>
-    </header>
-
     <section class="audit-actions reveal">
-      <button
-        class="btn primary"
-        type="button"
-        @click="fetchSummary"
-        :disabled="loading"
-      >
-        {{ loading ? "Refreshing..." : "Refresh metrics" }}
-      </button>
+      <Button class="btn primary" type="button" @click="fetchSummary" :disabled="loading" :label="loading ? 'Refreshing...' : 'Refresh metrics'" />
     </section>
-    <p v-if="error" class="audit-error reveal">{{ error }}</p>
+    <Message v-if="error" severity="error" class="audit-error reveal">{{ error }}</Message>
 
     <section class="stats-row reveal">
-      <div class="stat-card">
+      <Card class="stat-card">
+        <template #content>
         <p class="stat-label">Users total</p>
         <h3>{{ formatInteger(users.total_users) }}</h3>
         <p class="stat-note">Registered accounts in the app.</p>
-      </div>
-      <div class="stat-card">
+        </template>
+      </Card>
+      <Card class="stat-card">
+        <template #content>
         <p class="stat-label">Active users (30d)</p>
         <h3>{{ formatInteger(users.active_users_30d) }}</h3>
         <p class="stat-note">Users active within the past month.</p>
-      </div>
-      <div class="stat-card">
+        </template>
+      </Card>
+      <Card class="stat-card">
+        <template #content>
         <p class="stat-label">New users (7d)</p>
         <h3>{{ formatInteger(users.new_users_7d) }}</h3>
         <p class="stat-note">Recent signups for the last 7 days.</p>
-      </div>
+        </template>
+      </Card>
     </section>
 
     <main class="workspace reveal">
@@ -203,8 +187,10 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
-import { RouterLink } from "vue-router";
+import Button from "primevue/button";
+import Card from "primevue/card";
 import Chart from "primevue/chart";
+import Message from "primevue/message";
 
 const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 

@@ -39,7 +39,11 @@
               <label>Description</label>
               <Textarea v-model="form.description" rows="3" autoResize placeholder="What belongs in this collection?" fluid />
             </div>
-            <Button class="btn primary full" type="submit" label="Create folder" />
+            <Button
+              class="inline-flex w-full items-center justify-center rounded-full border-0 bg-[#ff6a00] px-6 py-3.5 text-[0.95rem] font-semibold text-white shadow-[0_16px_36px_rgba(255,106,0,0.25)] transition-transform duration-200 hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
+              type="submit"
+              label="Create folder"
+            />
           </form>
         </template>
       </Card>
@@ -60,7 +64,13 @@
             <p class="case-desc">{{ collection.description || "No description yet." }}</p>
             <p class="collection-meta">Created {{ collection.createdAt }} · {{ collection.files.length }} files</p>
           </div>
-          <Button class="btn ghost" severity="secondary" variant="outlined" label="Remove folder" @click="removeCollection(collection.id)" />
+          <Button
+            class="inline-flex items-center justify-center rounded-full border border-[rgba(12,17,24,0.2)] bg-transparent px-6 py-3.5 text-[0.95rem] font-semibold text-[#0c1118] transition-transform duration-200 hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
+            severity="secondary"
+            variant="outlined"
+            label="Remove folder"
+            @click="removeCollection(collection.id)"
+          />
         </div>
 
         <div class="collection-upload">
@@ -82,7 +92,7 @@
             </div>
           </div>
           <Button
-            class="btn primary"
+            class="inline-flex items-center justify-center rounded-full border-0 bg-[#ff6a00] px-6 py-3.5 text-[0.95rem] font-semibold text-white shadow-[0_16px_36px_rgba(255,106,0,0.25)] transition-transform duration-200 hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
             type="button"
             label="Add to folder"
             @click="addFiles(collection.id)"
@@ -99,14 +109,20 @@
               <h4>{{ file.name }}</h4>
               <p>{{ file.sizeLabel }} · {{ file.type }} · {{ file.uploadedAt }}</p>
             </div>
-            <Button class="btn ghost" severity="secondary" variant="outlined" label="Remove" @click="removeFile(collection.id, file.id)" />
+            <Button
+              class="inline-flex items-center justify-center rounded-full border border-[rgba(12,17,24,0.2)] bg-transparent px-6 py-3.5 text-[0.95rem] font-semibold text-[#0c1118] transition-transform duration-200 hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
+              severity="secondary"
+              variant="outlined"
+              label="Remove"
+              @click="removeFile(collection.id, file.id)"
+            />
           </div>
         </div>
         </template>
       </Card>
     </section>
 
-    <footer class="footer">Red Pajama Labs · Document collections</footer>
+    <footer class="relative z-[1] text-center text-[0.85rem] uppercase tracking-[0.2em] text-[#4b5664]">Red Pajama Labs · Document collections</footer>
   </div>
 </template>
 

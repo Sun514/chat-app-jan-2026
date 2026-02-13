@@ -42,7 +42,11 @@
               <label>Summary</label>
               <Textarea v-model="form.description" rows="3" autoResize placeholder="What is this investigation about?" fluid />
             </div>
-            <Button class="btn primary full" type="submit" label="Create investigation" />
+            <Button
+              class="inline-flex w-full items-center justify-center rounded-full border-0 bg-[#ff6a00] px-6 py-3.5 text-[0.95rem] font-semibold text-white shadow-[0_16px_36px_rgba(255,106,0,0.25)] transition-transform duration-200 hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
+              type="submit"
+              label="Create investigation"
+            />
           </form>
         </template>
       </Card>
@@ -67,15 +71,25 @@
               <span>Last query: {{ item.lastQuery }}</span>
             </div>
             <div class="case-buttons">
-              <Button class="btn primary" label="Open" @click="open(item.id)" />
-              <Button class="btn ghost" severity="secondary" variant="outlined" label="Archive" @click="remove(item.id)" />
+              <Button
+                class="inline-flex items-center justify-center rounded-full border-0 bg-[#ff6a00] px-6 py-3.5 text-[0.95rem] font-semibold text-white shadow-[0_16px_36px_rgba(255,106,0,0.25)] transition-transform duration-200 hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
+                label="Open"
+                @click="open(item.id)"
+              />
+              <Button
+                class="inline-flex items-center justify-center rounded-full border border-[rgba(12,17,24,0.2)] bg-transparent px-6 py-3.5 text-[0.95rem] font-semibold text-[#0c1118] transition-transform duration-200 hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
+                severity="secondary"
+                variant="outlined"
+                label="Archive"
+                @click="remove(item.id)"
+              />
             </div>
           </div>
         </template>
       </Card>
     </section>
 
-    <footer class="footer">Red Pajama Labs · Case hub</footer>
+    <footer class="relative z-[1] text-center text-[0.85rem] uppercase tracking-[0.2em] text-[#4b5664]">Red Pajama Labs · Case hub</footer>
   </div>
 </template>
 

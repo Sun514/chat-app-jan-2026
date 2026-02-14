@@ -18,14 +18,6 @@
       ></span>
     </div>
 
-    <section class="relative z-10 flex justify-end reveal">
-      <Button
-        type="button"
-        @click="fetchSummary"
-        :disabled="loading"
-        :label="loading ? 'Refreshing...' : 'Refresh metrics'"
-      />
-    </section>
     <Message
       v-if="error"
       severity="error"

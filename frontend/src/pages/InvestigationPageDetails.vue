@@ -1,72 +1,121 @@
 <template>
-  <div class="investigation">
-    <div class="backdrop">
-      <span class="halo"></span>
-      <span class="halo secondary"></span>
-      <span class="beam"></span>
-      <span class="noise"></span>
+  <div
+    class="relative min-h-screen flex flex-col gap-10 overflow-hidden py-28 px-[clamp(1.5rem,3vw,4rem)] pb-16"
+  >
+    <!-- Backdrop -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden">
+      <span
+        class="absolute rounded-full w-130 h-130 bg-[radial-gradient(circle,rgba(255,106,0,0.35)_0%,transparent_60%)] -top-45 -left-30"
+      ></span>
+      <span
+        class="absolute rounded-full w-115 h-115 bg-[radial-gradient(circle,rgba(27,178,160,0.3)_0%,transparent_65%)] top-10 -right-35"
+      ></span>
+      <span
+        class="absolute w-300 h-100 bg-[linear-gradient(120deg,rgba(12,17,24,0.05),transparent)] -rotate-[8deg] top-[48%] -left-[20%]"
+      ></span>
+      <span
+        class="absolute inset-0 opacity-50 bg-[linear-gradient(rgba(12,17,24,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(12,17,24,0.04)_1px,transparent_1px)] bg-size-[56px_56px]"
+      ></span>
     </div>
 
-    <section v-if="!investigation" class="missing-case">
+    <section
+      v-if="!investigation"
+      class="relative z-10 grid gap-4 rounded-[28px] p-10 text-left bg-white/92 border border-white/50 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+    >
       <h1>Investigation not found</h1>
       <p>Return to the case hub to create or select a case.</p>
-      <Button
-        label="Go to case hub"
-        @click="router.push('/investigations')"
-      />
+      <Button label="Go to case hub" @click="router.push('/investigations')" />
     </section>
 
     <template v-else>
-      <section class="stats-row reveal">
-        <Card class="stat-card">
+      <section
+        class="relative z-10 grid gap-5 grid-cols-[repeat(auto-fit,minmax(220px,1fr))] reveal"
+      >
+        <Card
+          class="relative z-10 rounded-[26px] p-7 grid gap-1.5 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+        >
           <template #content>
-          <p class="stat-label">Evidence logged</p>
-          <h3>{{ investigation.documents.length }}</h3>
-          <p class="stat-note">Files indexed for this case.</p>
+            <p class="m-0 text-sm uppercase tracking-[0.18em] text-[#4b5664]">
+              Evidence logged
+            </p>
+            <h3>{{ investigation.documents.length }}</h3>
+            <p class="m-0 text-[#4b5664]">Files indexed for this case.</p>
           </template>
         </Card>
-        <Card class="stat-card">
+        <Card
+          class="relative z-10 rounded-[26px] p-7 grid gap-1.5 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+        >
           <template #content>
-          <p class="stat-label">Last ingest</p>
-          <h3>{{ investigation.lastUploadAt }}</h3>
-          <p class="stat-note">Latest upload activity.</p>
+            <p class="m-0 text-sm uppercase tracking-[0.18em] text-[#4b5664]">
+              Last ingest
+            </p>
+            <h3>{{ investigation.lastUploadAt }}</h3>
+            <p class="m-0 text-[#4b5664]">Latest upload activity.</p>
           </template>
         </Card>
-        <Card class="stat-card">
+        <Card
+          class="relative z-10 rounded-[26px] p-7 grid gap-1.5 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+        >
           <template #content>
-          <p class="stat-label">Query focus</p>
-          <h3>{{ investigation.lastQuery }}</h3>
-          <p class="stat-note">Most recent inquiry issued.</p>
+            <p class="m-0 text-sm uppercase tracking-[0.18em] text-[#4b5664]">
+              Query focus
+            </p>
+            <h3>{{ investigation.lastQuery }}</h3>
+            <p class="m-0 text-[#4b5664]">Most recent inquiry issued.</p>
           </template>
         </Card>
       </section>
 
-      <main class="workspace">
-        <section class="panel collection-panel reveal">
-          <div class="panel-head">
+      <main class="relative z-10 grid gap-8">
+        <section
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)] reveal"
+        >
+          <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <p class="eyebrow">Document collections</p>
+              <p
+                class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
+              >
+                Document collections
+              </p>
               <h2>Attach shared folders</h2>
             </div>
-            <span class="chip muted">Shared</span>
+            <span
+              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-black/12 text-[#4b5664]"
+              >Shared</span
+            >
           </div>
 
-          <div class="collection-panel-grid">
-            <div class="collection-picker">
-              <p class="collection-label">Available folders</p>
-              <div v-if="collectionsState.items.length === 0" class="empty">
-                No collections yet. Create one to share files across investigations.
+          <div class="grid gap-7 grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div class="grid gap-4">
+              <p
+                class="m-0 text-xs uppercase tracking-[0.16em] text-[#4b5664] font-semibold"
+              >
+                Available folders
+              </p>
+              <div
+                v-if="collectionsState.items.length === 0"
+                class="text-[#4b5664] text-sm"
+              >
+                No collections yet. Create one to share files across
+                investigations.
               </div>
-              <div v-else class="collection-list">
-                <label v-for="collection in collectionsState.items" :key="collection.id" class="collection-option">
+              <div v-else class="flex-col gap-3">
+                <label
+                  v-for="collection in collectionsState.items"
+                  :key="collection.id"
+                  class="flex gap-3 items-start rounded-2xl border border-black/8 px-4 py-3 bg-white cursor-pointer"
+                >
                   <Checkbox
                     binary
                     :modelValue="isCollectionSelected(collection.id)"
                     @update:modelValue="toggleCollection(collection.id)"
                   />
                   <div>
-                    <h4>{{ collection.name }}</h4>
-                    <p>{{ collection.files.length }} files · {{ collection.description || "No description" }}</p>
+                    <h4 class="m-0 text-[0.95rem]">{{ collection.name }}</h4>
+                    <p class="mt-1 text-[#4b5664] text-[0.8rem]">
+                      {{ collection.files.length }} files ·
+                      {{ collection.description || "No description" }}
+                    </p>
                   </div>
                 </label>
               </div>
@@ -78,16 +127,29 @@
               </RouterLink>
             </div>
 
-            <div class="collection-preview">
-              <p class="collection-label">Included files</p>
-              <div v-if="selectedCollectionFiles.length === 0" class="empty">
+            <div class="grid gap-4">
+              <p
+                class="m-0 text-xs uppercase tracking-[0.16em] text-[#4b5664] font-semibold"
+              >
+                Included files
+              </p>
+              <div
+                v-if="selectedCollectionFiles.length === 0"
+                class="text-[#4b5664] text-sm"
+              >
                 Select a folder to surface shared evidence here.
               </div>
-              <div v-else class="collection-files">
-                <div v-for="file in selectedCollectionFiles" :key="file.id" class="collection-file">
+              <div v-else class="grid gap-3">
+                <div
+                  v-for="file in selectedCollectionFiles"
+                  :key="file.id"
+                  class="flex justify-between gap-4 rounded-2xl border border-black/8 px-4 py-3.5 bg-white"
+                >
                   <div>
-                    <h4>{{ file.name }}</h4>
-                    <p>{{ file.collectionName }} · {{ file.sizeLabel }}</p>
+                    <h4 class="m-0 text-[0.95rem]">{{ file.name }}</h4>
+                    <p class="mt-1 text-[#4b5664] text-[0.78rem]">
+                      {{ file.collectionName }} · {{ file.sizeLabel }}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -95,17 +157,28 @@
           </div>
         </section>
 
-        <section class="evidence-row">
-          <section class="panel intake reveal">
-            <div class="panel-head">
+        <section class="grid gap-8 grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+          <section
+            class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)] reveal"
+          >
+            <div class="flex items-center justify-between gap-4 flex-wrap">
               <div>
-                <p class="eyebrow">Evidence intake</p>
+                <p
+                  class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
+                >
+                  Evidence intake
+                </p>
                 <h2>Upload files</h2>
               </div>
-              <span class="chip">Secure</span>
+              <span
+                class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]"
+                >Secure</span
+              >
             </div>
 
-            <div class="upload-picker">
+            <div
+              class="grid gap-3 rounded-[22px] p-5 border border-dashed border-black/20 bg-black/3"
+            >
               <FileUpload
                 :key="uploadInputKey"
                 name="files[]"
@@ -119,23 +192,45 @@
                 @select="onFileChange"
               >
                 <template #empty>
-                  <p>Drop or select files</p>
+                  <p class="m-0 font-semibold">Drop or select files</p>
                 </template>
               </FileUpload>
               <div>
-                <p>{{ uploadSummary }}</p>
-                <span>{{ uploadForm.files.length ? uploadSizes : "PDF, DOCX, TXT, CSV, EML" }}</span>
+                <p class="m-0 font-semibold">{{ uploadSummary }}</p>
+                <span class="text-[#4b5664] text-sm">{{
+                  uploadForm.files.length
+                    ? uploadSizes
+                    : "PDF, DOCX, TXT, CSV, EML"
+                }}</span>
               </div>
             </div>
 
-            <div class="field-grid">
-              <div class="field">
-                <label>Chunk size</label>
-                <InputNumber v-model="uploadForm.chunkSize" :min="100" :max="10000" fluid />
+            <div
+              class="grid gap-4 grid-cols-[repeat(auto-fit,minmax(180px,1fr))]"
+            >
+              <div class="flex flex-col gap-2">
+                <label
+                  class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]"
+                  >Chunk size</label
+                >
+                <InputNumber
+                  v-model="uploadForm.chunkSize"
+                  :min="100"
+                  :max="10000"
+                  fluid
+                />
               </div>
-              <div class="field">
-                <label>Chunk overlap</label>
-                <InputNumber v-model="uploadForm.chunkOverlap" :min="0" :max="1000" fluid />
+              <div class="flex flex-col gap-2">
+                <label
+                  class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]"
+                  >Chunk overlap</label
+                >
+                <InputNumber
+                  v-model="uploadForm.chunkOverlap"
+                  :min="0"
+                  :max="1000"
+                  fluid
+                />
               </div>
             </div>
 
@@ -146,55 +241,105 @@
               :label="loading.upload ? 'Uploading...' : 'Upload evidence'"
             />
 
-            <div class="hint">
-              <strong>Ingest tips:</strong> Keep chunks near 1000 tokens, and upload source documents before asking
+            <div
+              class="rounded-[18px] p-4 px-5 text-[#4b5664] text-sm bg-black/5"
+            >
+              <strong class="text-[#0c1118]">Ingest tips:</strong> Keep chunks
+              near 1000 tokens, and upload source documents before asking
               comparative questions.
             </div>
 
-            <div class="upload-status" v-if="uploadResult">
+            <div
+              class="rounded-[18px] p-5 text-[0.85rem] bg-[#0f1722] text-[#f7f9fb]"
+              v-if="uploadResult"
+            >
               <h4>Upload response</h4>
-              <pre>{{ uploadResult }}</pre>
+              <pre class="mt-1.5 whitespace-pre-wrap">{{ uploadResult }}</pre>
             </div>
           </section>
 
-          <section class="ledger reveal">
-            <div class="panel-head">
+          <section
+            class="relative z-10 grid gap-6 rounded-[28px] p-8 bg-white/92 border border-white/45 shadow-[0_24px_60px_rgba(11,17,25,0.18)] reveal"
+          >
+            <div class="flex items-center justify-between gap-4 flex-wrap">
               <div>
-                <p class="eyebrow">Ledger</p>
+                <p
+                  class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
+                >
+                  Ledger
+                </p>
                 <h2>Evidence timeline</h2>
               </div>
-              <span class="chip muted">Case activity</span>
+              <span
+                class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-black/12 text-[#4b5664]"
+                >Case activity</span
+              >
             </div>
 
-            <div class="ledger-grid">
-              <div v-if="investigation.documents.length === 0" class="empty-card">
+            <div class="grid gap-4 grid-cols-1">
+              <div
+                v-if="investigation.documents.length === 0"
+                class="flex justify-between gap-4 rounded-[18px] border border-black/10 px-4 py-3.5 bg-white"
+              >
                 Upload a file to start the investigation ledger.
               </div>
-              <div v-for="file in investigation.documents" :key="file.id" class="ledger-card">
+              <div
+                v-for="file in investigation.documents"
+                :key="file.id"
+                class="flex justify-between gap-4 rounded-[18px] border border-black/10 px-4 py-3.5 bg-white"
+              >
                 <div>
-                  <h4>{{ file.name }}</h4>
-                  <p>{{ file.timestamp }}</p>
+                  <h4 class="m-0 text-[0.95rem]">{{ file.name }}</h4>
+                  <p class="mt-1 text-[#4b5664] text-[0.78rem]">
+                    {{ file.timestamp }}
+                  </p>
                 </div>
-                <div class="ledger-meta">
+                <div
+                  class="flex flex-col gap-1 items-end text-xs text-[#4b5664]"
+                >
                   <span>{{ file.size }}</span>
-                  <span :class="['status', file.status.toLowerCase()]">{{ file.status }}</span>
+                  <span
+                    :class="[
+                      'font-semibold uppercase tracking-[0.12em] text-[0.7rem]',
+                      file.status.toLowerCase() === 'indexed'
+                        ? 'text-[#0f7b67]'
+                        : file.status.toLowerCase() === 'uploading'
+                          ? 'text-[#b96b00]'
+                          : file.status.toLowerCase() === 'failed'
+                            ? 'text-[#c0392b]'
+                            : '',
+                    ]"
+                    >{{ file.status }}</span
+                  >
                 </div>
               </div>
             </div>
           </section>
         </section>
 
-        <section class="panel inquiry full-width reveal">
-          <div class="panel-head">
+        <section
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)] w-full reveal"
+        >
+          <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <p class="eyebrow">Query</p>
+              <p
+                class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
+              >
+                Query
+              </p>
               <h2>Interrogate the evidence</h2>
             </div>
-            <span class="chip muted">Live</span>
+            <span
+              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-black/12 text-[#4b5664]"
+              >Live</span
+            >
           </div>
 
-          <div class="field">
-            <label>Investigation query</label>
+          <div class="flex flex-col gap-2">
+            <label
+              class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]"
+              >Investigation query</label
+            >
             <Textarea
               v-model="searchForm.query"
               rows="4"
@@ -205,18 +350,41 @@
             />
           </div>
 
-          <div class="field-grid">
-            <div class="field">
-              <label>Limit</label>
-                <InputNumber v-model="searchForm.limit" :min="1" :max="100" @keydown="onQueryKeydown" fluid />
-              </div>
-              <div class="field">
-                <label>Similarity threshold</label>
-                <InputNumber v-model="searchForm.threshold" :min="0" :max="1" :step="0.05" :minFractionDigits="2" :maxFractionDigits="2" @keydown="onQueryKeydown" fluid />
-              </div>
+          <div
+            class="grid gap-4 grid-cols-[repeat(auto-fit,minmax(180px,1fr))]"
+          >
+            <div class="flex flex-col gap-2">
+              <label
+                class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]"
+                >Limit</label
+              >
+              <InputNumber
+                v-model="searchForm.limit"
+                :min="1"
+                :max="100"
+                @keydown="onQueryKeydown"
+                fluid
+              />
             </div>
+            <div class="flex flex-col gap-2">
+              <label
+                class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]"
+                >Similarity threshold</label
+              >
+              <InputNumber
+                v-model="searchForm.threshold"
+                :min="0"
+                :max="1"
+                :step="0.05"
+                :minFractionDigits="2"
+                :maxFractionDigits="2"
+                @keydown="onQueryKeydown"
+                fluid
+              />
+            </div>
+          </div>
 
-            <div class="inline-actions">
+          <div class="flex flex-wrap gap-3">
             <Button
               @click="runSearch"
               :disabled="loading.search || !searchForm.query"
@@ -229,22 +397,39 @@
               :disabled="!searchForm.query && searchResults.length === 0"
               label="Clear"
             />
-            </div>
+          </div>
 
-          <div class="results">
-            <div v-if="searchResults.length === 0" class="empty">No matches yet. Run a query to surface evidence.</div>
-            <div v-for="item in searchResults" :key="item.chunk_id" class="result-card">
-              <div class="result-head">
-                <h4>{{ item.filename }}</h4>
-                <span>{{ item.similarity.toFixed(3) }}</span>
+          <div class="grid gap-4">
+            <div
+              v-if="searchResults.length === 0"
+              class="text-[#4b5664] text-sm"
+            >
+              No matches yet. Run a query to surface evidence.
+            </div>
+            <div
+              v-for="item in searchResults"
+              :key="item.chunk_id"
+              class="rounded-[18px] border border-black/8 p-4 px-5 bg-white shadow-[0_10px_20px_rgba(12,17,24,0.06)]"
+            >
+              <div class="flex justify-between items-center gap-4">
+                <h4 class="m-0 text-base">{{ item.filename }}</h4>
+                <span class="font-semibold text-sm text-[#c84b00]">{{
+                  item.similarity.toFixed(3)
+                }}</span>
               </div>
-              <p>{{ item.content }}</p>
+              <p class="mt-1.5 text-[#4b5664] leading-relaxed">
+                {{ item.content }}
+              </p>
             </div>
           </div>
         </section>
       </main>
 
-      <footer class="relative z-10 text-center text-sm uppercase tracking-[0.2em] text-[#4b5664]">Red Pajama Labs · File intelligence console</footer>
+      <footer
+        class="relative z-10 text-center text-sm uppercase tracking-[0.2em] text-[#4b5664]"
+      >
+        Red Pajama Labs · File intelligence console
+      </footer>
     </template>
   </div>
 </template>
@@ -269,7 +454,8 @@ import { state as collectionsState } from "../stores/documentCollections";
 
 const route = useRoute();
 const router = useRouter();
-const acceptedFileTypes = ".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.csv,.txt,.md,.html,.json,.xml,.rtf,.eml";
+const acceptedFileTypes =
+  ".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.csv,.txt,.md,.html,.json,.xml,.rtf,.eml";
 const uploadInputKey = ref(0);
 
 const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
@@ -313,19 +499,15 @@ const toggleCollection = (collectionId) => {
 const selectedCollectionFiles = computed(() => {
   if (!investigation.value) return [];
   const selectedIds = investigation.value.collectionIds || [];
-  const entries = collectionsState.items.filter((item) => selectedIds.includes(item.id));
+  const entries = collectionsState.items.filter((item) =>
+    selectedIds.includes(item.id),
+  );
   return entries.flatMap((collection) =>
     collection.files.map((file) => ({
       ...file,
       collectionName: collection.name,
-    }))
+    })),
   );
-});
-
-const healthSummary = computed(() => {
-  if (!health.value) return "Not checked";
-  if (health.value.database?.startsWith("unhealthy")) return "Degraded";
-  return health.value.status || "Unknown";
 });
 
 const formatBytes = (value) => {
@@ -339,32 +521,6 @@ const formatBytes = (value) => {
 const onFileChange = (event) => {
   uploadForm.files = Array.from(event.files || []);
 };
-
-const pingHealth = async () => {
-  loading.health = true;
-  try {
-    const res = await fetch(`${apiBase}/health`);
-    health.value = await res.json();
-  } catch (error) {
-    health.value = { status: "error", database: error.message };
-  } finally {
-    loading.health = false;
-  }
-};
-
-const fetchSupportedTypes = async () => {
-  loading.types = true;
-  try {
-    const res = await fetch(`${apiBase}/documents/supported-types`);
-    const data = await res.json();
-    supportedTypes.value = data.extensions || [];
-  } catch (error) {
-    supportedTypes.value = [`Error: ${error.message}`];
-  } finally {
-    loading.types = false;
-  }
-};
-
 
 const uploadDocument = async () => {
   if (uploadForm.files.length === 0 || !investigation.value) return;
@@ -446,7 +602,7 @@ watch(
   (id) => {
     investigation.value = getInvestigation(id);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const runSearch = async () => {
@@ -486,3 +642,44 @@ const clearSearch = () => {
   }
 };
 </script>
+
+<style scoped>
+.reveal {
+  opacity: 0;
+  animation: glide 0.7s ease forwards;
+}
+
+.reveal:nth-of-type(1) {
+  animation-delay: 0.05s;
+}
+
+.reveal:nth-of-type(2) {
+  animation-delay: 0.12s;
+}
+
+.reveal:nth-of-type(3) {
+  animation-delay: 0.2s;
+}
+
+.reveal:nth-of-type(4) {
+  animation-delay: 0.28s;
+}
+
+@keyframes glide {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    animation: none;
+  }
+}
+</style>

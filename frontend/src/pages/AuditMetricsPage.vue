@@ -1,13 +1,24 @@
 <template>
-  <div class="audit-metrics">
-    <div class="backdrop">
-      <span class="halo"></span>
-      <span class="halo secondary"></span>
-      <span class="beam"></span>
-      <span class="noise"></span>
+  <div
+    class="relative min-h-screen flex flex-col gap-10 overflow-hidden py-28 px-[clamp(1.5rem,3vw,4rem)] pb-16"
+  >
+    <!-- Backdrop -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden">
+      <span
+        class="absolute rounded-full w-130 h-130 bg-[radial-gradient(circle,rgba(255,106,0,0.35)_0%,transparent_60%)] -top-45 -left-30"
+      ></span>
+      <span
+        class="absolute rounded-full w-115 h-115 bg-[radial-gradient(circle,rgba(27,178,160,0.3)_0%,transparent_65%)] top-10 -right-35"
+      ></span>
+      <span
+        class="absolute w-300 h-100 bg-[linear-gradient(120deg,rgba(12,17,24,0.05),transparent)] -rotate-[8deg] top-[48%] -left-[20%]"
+      ></span>
+      <span
+        class="absolute inset-0 opacity-50 bg-[linear-gradient(rgba(12,17,24,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(12,17,24,0.04)_1px,transparent_1px)] bg-size-[56px_56px]"
+      ></span>
     </div>
 
-    <section class="audit-actions reveal">
+    <section class="relative z-10 flex justify-end reveal">
       <Button
         type="button"
         @click="fetchSummary"
@@ -15,178 +26,285 @@
         :label="loading ? 'Refreshing...' : 'Refresh metrics'"
       />
     </section>
-    <Message v-if="error" severity="error" class="audit-error reveal">{{ error }}</Message>
+    <Message
+      v-if="error"
+      severity="error"
+      class="relative z-10 m-0 rounded-xl border border-red-700/20 text-[#9f2d1f] bg-red-700/10 text-sm px-4 py-3 reveal"
+      >{{ error }}</Message
+    >
 
-    <section class="stats-row reveal">
-      <Card class="stat-card">
+    <section
+      class="relative z-10 grid gap-5 grid-cols-[repeat(auto-fit,minmax(220px,1fr))] reveal"
+    >
+      <Card
+        class="relative z-10 rounded-[26px] p-7 grid gap-1.5 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+      >
         <template #content>
-        <p class="stat-label">Users total</p>
-        <h3>{{ formatInteger(users.total_users) }}</h3>
-        <p class="stat-note">Registered accounts in the app.</p>
+          <p class="m-0 text-sm uppercase tracking-[0.18em] text-[#4b5664]">
+            Users total
+          </p>
+          <h3>{{ formatInteger(users.total_users) }}</h3>
+          <p class="m-0 text-[#4b5664]">Registered accounts in the app.</p>
         </template>
       </Card>
-      <Card class="stat-card">
+      <Card
+        class="relative z-10 rounded-[26px] p-7 grid gap-1.5 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+      >
         <template #content>
-        <p class="stat-label">Active users (30d)</p>
-        <h3>{{ formatInteger(users.active_users_30d) }}</h3>
-        <p class="stat-note">Users active within the past month.</p>
+          <p class="m-0 text-sm uppercase tracking-[0.18em] text-[#4b5664]">
+            Active users (30d)
+          </p>
+          <h3>{{ formatInteger(users.active_users_30d) }}</h3>
+          <p class="m-0 text-[#4b5664]">Users active within the past month.</p>
         </template>
       </Card>
-      <Card class="stat-card">
+      <Card
+        class="relative z-10 rounded-[26px] p-7 grid gap-1.5 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+      >
         <template #content>
-        <p class="stat-label">New users (7d)</p>
-        <h3>{{ formatInteger(users.new_users_7d) }}</h3>
-        <p class="stat-note">Recent signups for the last 7 days.</p>
+          <p class="m-0 text-sm uppercase tracking-[0.18em] text-[#4b5664]">
+            New users (7d)
+          </p>
+          <h3>{{ formatInteger(users.new_users_7d) }}</h3>
+          <p class="m-0 text-[#4b5664]">Recent signups for the last 7 days.</p>
         </template>
       </Card>
     </section>
 
-    <main class="workspace reveal">
-      <section class="audit-grid">
-        <article class="panel model-usage-panel">
-          <div class="panel-head">
+    <main class="relative z-10 grid gap-8 reveal">
+      <section
+        class="grid gap-6 grid-cols-[repeat(auto-fit,minmax(min(420px,100%),1fr))]"
+      >
+        <article
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+        >
+          <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <p class="eyebrow">Model usage</p>
+              <p
+                class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
+              >
+                Model usage
+              </p>
               <h2>Requests by model</h2>
             </div>
-            <span class="chip">{{
-              topModel
-                ? `${topModel.model} · ${formatPercent(topModel.computed_share)}`
-                : "--"
-            }}</span>
+            <span
+              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]"
+              >{{
+                topModel
+                  ? `${topModel.model} · ${formatPercent(topModel.computed_share)}`
+                  : "--"
+              }}</span
+            >
           </div>
-          <div class="metric-kv">
-            <span>Requests</span>
+          <div
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+          >
+            <span class="text-[#4b5664] text-sm">Requests</span>
             <strong>{{ formatInteger(modelRequests.total_requests) }}</strong>
           </div>
-          <div v-if="normalizedModelItems.length > 0" class="model-usage-layout">
-            <div class="model-chart-wrap">
-              <div class="model-chart-canvas">
+          <div
+            v-if="normalizedModelItems.length > 0"
+            class="flex justify-center gap-5 items-start"
+          >
+            <div class="grid justify-items-center content-start gap-3">
+              <div
+                class="w-130 h-130 max-w-full [&_canvas]:w-full! [&_canvas]:h-full!"
+              >
                 <Chart
                   type="doughnut"
                   :data="modelChartData"
                   :options="doughnutOptions"
-                  :canvasProps="{ role: 'img', 'aria-label': 'Model requests by model chart' }"
+                  :canvasProps="{
+                    role: 'img',
+                    'aria-label': 'Model requests by model chart',
+                  }"
                 />
               </div>
-              <p class="model-chart-caption">
+              <p class="m-0 text-[#4b5664] text-xs uppercase tracking-[0.12em]">
                 Top model: <strong>{{ topModel?.model || "--" }}</strong>
               </p>
             </div>
           </div>
-          <p v-else class="empty">No model request data available.</p>
+          <p v-else class="text-[#4b5664] text-sm">
+            No model request data available.
+          </p>
         </article>
 
-        <article class="panel">
-          <div class="panel-head">
+        <article
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+        >
+          <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <p class="eyebrow">Navigation usage</p>
+              <p
+                class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
+              >
+                Navigation usage
+              </p>
               <h2>Visits by module</h2>
             </div>
-            <span class="chip">{{
-              topModule
-                ? `${topModule.module} · ${formatPercent(topModule.computed_share)}`
-                : "--"
-            }}</span>
+            <span
+              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]"
+              >{{
+                topModule
+                  ? `${topModule.module} · ${formatPercent(topModule.computed_share)}`
+                  : "--"
+              }}</span
+            >
           </div>
-          <div class="metric-kv">
-            <span>Total visits</span>
+          <div
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+          >
+            <span class="text-[#4b5664] text-sm">Total visits</span>
             <strong>{{ formatInteger(moduleTraffic.total_visits) }}</strong>
           </div>
-          <div v-if="normalizedModuleItems.length > 0" class="model-usage-layout">
-            <div class="model-chart-wrap">
-              <div class="model-chart-canvas">
+          <div
+            v-if="normalizedModuleItems.length > 0"
+            class="flex justify-center gap-5 items-start"
+          >
+            <div class="grid justify-items-center content-start gap-3">
+              <div
+                class="w-130 h-130 max-w-full [&_canvas]:w-full! [&_canvas]:h-full!"
+              >
                 <Chart
                   type="doughnut"
                   :data="moduleChartData"
                   :options="doughnutOptions"
-                  :canvasProps="{ role: 'img', 'aria-label': 'Visits by module chart' }"
+                  :canvasProps="{
+                    role: 'img',
+                    'aria-label': 'Visits by module chart',
+                  }"
                 />
               </div>
-              <p class="model-chart-caption">
+              <p class="m-0 text-[#4b5664] text-xs uppercase tracking-[0.12em]">
                 Top module: <strong>{{ topModule?.module || "--" }}</strong>
               </p>
             </div>
           </div>
-          <p v-else class="empty">No module traffic data available.</p>
+          <p v-else class="text-[#4b5664] text-sm">
+            No module traffic data available.
+          </p>
         </article>
 
-        <article class="panel">
-          <div class="panel-head">
+        <article
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+        >
+          <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <p class="eyebrow">Workflow execution</p>
+              <p
+                class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
+              >
+                Workflow execution
+              </p>
               <h2>Case workflows</h2>
             </div>
-            <span class="chip">{{
-              formatPercent(caseWorkflows.completion_rate_percent)
-            }}</span>
+            <span
+              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]"
+              >{{ formatPercent(caseWorkflows.completion_rate_percent) }}</span
+            >
           </div>
-          <div class="metric-kv">
-            <span>Started</span>
+          <div
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+          >
+            <span class="text-[#4b5664] text-sm">Started</span>
             <strong>{{ formatInteger(caseWorkflows.started) }}</strong>
           </div>
-          <div class="metric-kv">
-            <span>Completed</span>
+          <div
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+          >
+            <span class="text-[#4b5664] text-sm">Completed</span>
             <strong>{{ formatInteger(caseWorkflows.completed) }}</strong>
           </div>
-          <div class="metric-kv">
-            <span>Completion rate</span>
+          <div
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+          >
+            <span class="text-[#4b5664] text-sm">Completion rate</span>
             <strong>{{
               formatPercent(caseWorkflows.completion_rate_percent)
             }}</strong>
           </div>
         </article>
 
-        <article class="panel">
-          <div class="panel-head">
+        <article
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+        >
+          <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <p class="eyebrow">Speech processing</p>
+              <p
+                class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
+              >
+                Speech processing
+              </p>
               <h2>Audio transcriptions</h2>
             </div>
-            <span class="chip">{{
-              formatInteger(audioTranscription.audio_files_transcribed)
-            }}</span>
+            <span
+              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]"
+              >{{
+                formatInteger(audioTranscription.audio_files_transcribed)
+              }}</span
+            >
           </div>
-          <div class="metric-kv">
-            <span>Files transcribed</span>
+          <div
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+          >
+            <span class="text-[#4b5664] text-sm">Files transcribed</span>
             <strong>{{
               formatInteger(audioTranscription.audio_files_transcribed)
             }}</strong>
           </div>
-          <div class="metric-kv">
-            <span>Total duration</span>
+          <div
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+          >
+            <span class="text-[#4b5664] text-sm">Total duration</span>
             <strong>{{
               formatDuration(audioTranscription.total_duration_seconds)
             }}</strong>
           </div>
         </article>
 
-        <article class="panel">
-          <div class="panel-head">
+        <article
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+        >
+          <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <p class="eyebrow">Platform reliability</p>
+              <p
+                class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
+              >
+                Platform reliability
+              </p>
               <h2>API metrics</h2>
             </div>
-            <span class="chip">{{ formatPercent(usage.success_rate_percent) }}</span>
+            <span
+              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]"
+              >{{ formatPercent(usage.success_rate_percent) }}</span
+            >
           </div>
-          <div class="metric-kv">
-            <span>API requests (24h)</span>
+          <div
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+          >
+            <span class="text-[#4b5664] text-sm">API requests (24h)</span>
             <strong>{{ formatInteger(usage.total_api_requests_24h) }}</strong>
           </div>
-          <div class="metric-kv">
-            <span>Success rate</span>
+          <div
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+          >
+            <span class="text-[#4b5664] text-sm">Success rate</span>
             <strong>{{ formatPercent(usage.success_rate_percent) }}</strong>
           </div>
-          <div class="metric-kv">
-            <span>Avg requests per user</span>
+          <div
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+          >
+            <span class="text-[#4b5664] text-sm">Avg requests per user</span>
             <strong>{{ formatDecimal(usage.avg_requests_per_user) }}</strong>
           </div>
         </article>
       </section>
-
     </main>
 
-    <footer class="relative z-10 text-center text-sm uppercase tracking-[0.2em] text-[#4b5664]">Red Pajama Labs · Audit metrics</footer>
+    <footer
+      class="relative z-10 text-center text-sm uppercase tracking-[0.2em] text-[#4b5664]"
+    >
+      Red Pajama Labs · Audit metrics
+    </footer>
   </div>
 </template>
 
@@ -220,7 +338,14 @@ const modelPalette = [
   "#e66f00",
   "#64748b",
 ];
-const modulePalette = ["#1bb2a0", "#3f8efc", "#ff6a00", "#f4b400", "#9b6ef3", "#64748b"];
+const modulePalette = [
+  "#1bb2a0",
+  "#3f8efc",
+  "#ff6a00",
+  "#f4b400",
+  "#9b6ef3",
+  "#64748b",
+];
 const legendLabelWithPercent = (value, total) => {
   const share = total > 0 ? (value / total) * 100 : 0;
   return `${share.toFixed(1)}%`;
@@ -229,10 +354,16 @@ const legendLabelWithPercent = (value, total) => {
 const buildLegendLabels = (chart) => {
   const labels = Array.isArray(chart.data?.labels) ? chart.data.labels : [];
   const dataset = chart.data?.datasets?.[0] || {};
-  const values = Array.isArray(dataset.data) ? dataset.data.map((item) => Number(item) || 0) : [];
+  const values = Array.isArray(dataset.data)
+    ? dataset.data.map((item) => Number(item) || 0)
+    : [];
   const total = values.reduce((sum, item) => sum + item, 0);
-  const backgroundColors = Array.isArray(dataset.backgroundColor) ? dataset.backgroundColor : [];
-  const borderColors = Array.isArray(dataset.borderColor) ? dataset.borderColor : [dataset.borderColor || "#ffffff"];
+  const backgroundColors = Array.isArray(dataset.backgroundColor)
+    ? dataset.backgroundColor
+    : [];
+  const borderColors = Array.isArray(dataset.borderColor)
+    ? dataset.borderColor
+    : [dataset.borderColor || "#ffffff"];
   const borderWidth = Number(dataset.borderWidth) || 1;
 
   return labels.map((label, index) => {
@@ -275,8 +406,13 @@ const doughnutOptions = {
       callbacks: {
         label(context) {
           const value = Number(context.parsed) || 0;
-          const dataset = Array.isArray(context.dataset.data) ? context.dataset.data : [];
-          const total = dataset.reduce((sum, item) => sum + (Number(item) || 0), 0);
+          const dataset = Array.isArray(context.dataset.data)
+            ? context.dataset.data
+            : [];
+          const total = dataset.reduce(
+            (sum, item) => sum + (Number(item) || 0),
+            0,
+          );
           const share = total > 0 ? ((value / total) * 100).toFixed(1) : "0.0";
           return `${context.label}: ${new Intl.NumberFormat().format(value)} (${share}%)`;
         },
@@ -299,11 +435,14 @@ const normalizedModelItems = computed(() => {
   const total = totalFromApi > 0 ? totalFromApi : totalFromItems;
 
   return items
-    .sort((a, b) => (Number(b.request_count) || 0) - (Number(a.request_count) || 0))
+    .sort(
+      (a, b) => (Number(b.request_count) || 0) - (Number(a.request_count) || 0),
+    )
     .map((item, index) => {
       const requestCount = Number(item.request_count) || 0;
       const fallbackShare = Number(item.share_percent) || 0;
-      const computedShare = total > 0 ? (requestCount / total) * 100 : fallbackShare;
+      const computedShare =
+        total > 0 ? (requestCount / total) * 100 : fallbackShare;
       return {
         ...item,
         request_count: requestCount,
@@ -345,7 +484,8 @@ const normalizedModuleItems = computed(() => {
     .map((item, index) => {
       const visitCount = Number(item.visit_count) || 0;
       const fallbackShare = Number(item.share_percent) || 0;
-      const computedShare = total > 0 ? (visitCount / total) * 100 : fallbackShare;
+      const computedShare =
+        total > 0 ? (visitCount / total) * 100 : fallbackShare;
       return {
         ...item,
         visit_count: visitCount,
@@ -427,3 +567,44 @@ onMounted(() => {
   fetchSummary();
 });
 </script>
+
+<style scoped>
+.reveal {
+  opacity: 0;
+  animation: glide 0.7s ease forwards;
+}
+
+.reveal:nth-of-type(1) {
+  animation-delay: 0.05s;
+}
+
+.reveal:nth-of-type(2) {
+  animation-delay: 0.12s;
+}
+
+.reveal:nth-of-type(3) {
+  animation-delay: 0.2s;
+}
+
+.reveal:nth-of-type(4) {
+  animation-delay: 0.28s;
+}
+
+@keyframes glide {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    animation: none;
+  }
+}
+</style>

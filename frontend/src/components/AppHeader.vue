@@ -100,42 +100,9 @@ const navItems = computed(() => {
 }
 
 @media (max-width: 640px) {
-  .brand-mark {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    font-size: 0.68rem;
-  }
-
-  .brand-title,
-  .brand-subtitle {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: min(60vw, 260px);
-  }
-
-  .brand-title {
-    font-size: 0.95rem;
-  }
-
-  .brand-subtitle {
-    font-size: 0.78rem;
-  }
-
   :deep(.p-menubar-item-link) {
     padding: 0.42rem 0.7rem !important;
     font-size: 0.82rem !important;
-  }
-}
-
-@media (max-width: 420px) {
-  .brand-subtitle {
-    display: none;
-  }
-
-  .brand-title {
-    max-width: min(58vw, 210px);
   }
 }
 </style>

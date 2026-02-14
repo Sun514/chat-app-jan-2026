@@ -1,22 +1,5 @@
 <template>
-  <div
-    class="relative min-h-screen flex flex-col gap-10 overflow-hidden py-28 px-[clamp(1.5rem,3vw,4rem)] pb-16"
-  >
-    <!-- Backdrop -->
-    <div class="absolute inset-0 pointer-events-none overflow-hidden">
-      <span
-        class="absolute rounded-full w-130 h-130 bg-[radial-gradient(circle,rgba(255,106,0,0.35)_0%,transparent_60%)] -top-45 -left-30"
-      ></span>
-      <span
-        class="absolute rounded-full w-115 h-115 bg-[radial-gradient(circle,rgba(27,178,160,0.3)_0%,transparent_65%)] top-10 -right-35"
-      ></span>
-      <span
-        class="absolute w-300 h-100 bg-[linear-gradient(120deg,rgba(12,17,24,0.05),transparent)] -rotate-[8deg] top-[48%] -left-[20%]"
-      ></span>
-      <span
-        class="absolute inset-0 opacity-50 bg-[linear-gradient(rgba(12,17,24,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(12,17,24,0.04)_1px,transparent_1px)] bg-size-[56px_56px]"
-      ></span>
-    </div>
+  <PageShell footer-text="Red Pajama Labs · Case hub">
 
     <section
       class="relative z-10 grid gap-8 grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]"
@@ -149,12 +132,7 @@
       </Card>
     </section>
 
-    <footer
-      class="relative z-10 text-center text-sm uppercase tracking-[0.2em] text-[#4b5664]"
-    >
-      Red Pajama Labs · Case hub
-    </footer>
-  </div>
+  </PageShell>
 </template>
 
 <script setup>
@@ -164,6 +142,7 @@ import Button from "primevue/button";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
+import PageShell from "../components/PageShell.vue";
 import {
   state,
   createInvestigation,
@@ -198,44 +177,3 @@ const open = (id) => {
   router.push(`/investigations/${id}`);
 };
 </script>
-
-<style scoped>
-.reveal {
-  opacity: 0;
-  animation: glide 0.7s ease forwards;
-}
-
-.reveal:nth-of-type(1) {
-  animation-delay: 0.05s;
-}
-
-.reveal:nth-of-type(2) {
-  animation-delay: 0.12s;
-}
-
-.reveal:nth-of-type(3) {
-  animation-delay: 0.2s;
-}
-
-.reveal:nth-of-type(4) {
-  animation-delay: 0.28s;
-}
-
-@keyframes glide {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reveal {
-    opacity: 1;
-    animation: none;
-  }
-}
-</style>

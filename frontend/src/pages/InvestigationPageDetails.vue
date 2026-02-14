@@ -11,7 +11,6 @@
       <h1>Investigation not found</h1>
       <p>Return to the case hub to create or select a case.</p>
       <Button
-        class="inline-flex items-center justify-center rounded-full border-0 bg-[#0f1722] px-6 py-3.5 text-[0.95rem] font-semibold text-white shadow-[0_16px_36px_rgba(12,17,24,0.28)] transition-transform duration-200 hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
         label="Go to case hub"
         @click="router.push('/investigations')"
       />
@@ -141,7 +140,7 @@
             </div>
 
             <Button
-              class="inline-flex w-full items-center justify-center rounded-full border-0 bg-[#ff6a00] px-6 py-3.5 text-[0.95rem] font-semibold text-white shadow-[0_16px_36px_rgba(255,106,0,0.25)] transition-transform duration-200 hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
+              class="w-full"
               @click="uploadDocument"
               :disabled="loading.upload || uploadForm.files.length === 0"
               :label="loading.upload ? 'Uploading...' : 'Upload evidence'"
@@ -219,13 +218,11 @@
 
             <div class="inline-actions">
             <Button
-              class="inline-flex items-center justify-center rounded-full border-0 bg-[#0f1722] px-6 py-3.5 text-[0.95rem] font-semibold text-white shadow-[0_16px_36px_rgba(12,17,24,0.28)] transition-transform duration-200 hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
               @click="runSearch"
               :disabled="loading.search || !searchForm.query"
               :label="loading.search ? 'Searching...' : 'Run query'"
             />
             <Button
-              class="inline-flex items-center justify-center rounded-full border border-[rgba(12,17,24,0.2)] bg-transparent px-6 py-3.5 text-[0.95rem] font-semibold text-[#0c1118] transition-transform duration-200 hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
               severity="secondary"
               variant="outlined"
               @click="clearSearch"
@@ -247,7 +244,7 @@
         </section>
       </main>
 
-      <footer class="relative z-[1] text-center text-[0.85rem] uppercase tracking-[0.2em] text-[#4b5664]">Red Pajama Labs · File intelligence console</footer>
+      <footer class="relative z-10 text-center text-sm uppercase tracking-[0.2em] text-[#4b5664]">Red Pajama Labs · File intelligence console</footer>
     </template>
   </div>
 </template>

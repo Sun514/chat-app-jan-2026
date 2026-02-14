@@ -10,7 +10,7 @@
     <section class="hub-hero">
       <div class="hero-text reveal">
         <p class="eyebrow">Case management</p>
-        <h1>Create and control investigations before evidence lands.</h1>
+        <h1 class="font-[family-name:Playfair_Display] text-3xl md:text-4xl lg:text-[clamp(2.2rem,3.4vw,3.6rem)] font-semibold">Create and control investigations before evidence lands.</h1>
         <p class="lead">
           Build a workspace for each inquiry, then open a case to upload documents and run investigative queries.
         </p>
@@ -43,7 +43,7 @@
               <Textarea v-model="form.description" rows="3" autoResize placeholder="What is this investigation about?" fluid />
             </div>
             <Button
-              class="inline-flex w-full items-center justify-center rounded-full border-0 bg-[#ff6a00] px-6 py-3.5 text-[0.95rem] font-semibold text-white shadow-[0_16px_36px_rgba(255,106,0,0.25)] transition-transform duration-200 hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
+              class="w-full"
               type="submit"
               label="Create investigation"
             />
@@ -72,12 +72,10 @@
             </div>
             <div class="case-buttons">
               <Button
-                class="inline-flex items-center justify-center rounded-full border-0 bg-[#ff6a00] px-6 py-3.5 text-[0.95rem] font-semibold text-white shadow-[0_16px_36px_rgba(255,106,0,0.25)] transition-transform duration-200 hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
                 label="Open"
                 @click="open(item.id)"
               />
               <Button
-                class="inline-flex items-center justify-center rounded-full border border-[rgba(12,17,24,0.2)] bg-transparent px-6 py-3.5 text-[0.95rem] font-semibold text-[#0c1118] transition-transform duration-200 hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
                 severity="secondary"
                 variant="outlined"
                 label="Archive"
@@ -89,7 +87,7 @@
       </Card>
     </section>
 
-    <footer class="relative z-[1] text-center text-[0.85rem] uppercase tracking-[0.2em] text-[#4b5664]">Red Pajama Labs · Case hub</footer>
+    <footer class="relative z-10 text-center text-sm uppercase tracking-[0.2em] text-[#4b5664]">Red Pajama Labs · Case hub</footer>
   </div>
 </template>
 

@@ -9,7 +9,6 @@
 
     <section class="audit-actions reveal">
       <Button
-        class="inline-flex items-center justify-center rounded-full border-0 bg-[#ff6a00] px-6 py-3.5 text-[0.95rem] font-semibold text-white shadow-[0_16px_36px_rgba(255,106,0,0.25)] transition-transform duration-200 hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none"
         type="button"
         @click="fetchSummary"
         :disabled="loading"
@@ -187,7 +186,7 @@
 
     </main>
 
-    <footer class="relative z-[1] text-center text-[0.85rem] uppercase tracking-[0.2em] text-[#4b5664]">Red Pajama Labs · Audit metrics</footer>
+    <footer class="relative z-10 text-center text-sm uppercase tracking-[0.2em] text-[#4b5664]">Red Pajama Labs · Audit metrics</footer>
   </div>
 </template>
 

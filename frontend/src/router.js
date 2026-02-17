@@ -3,11 +3,20 @@ import InvestigationsPage from "./pages/InvestigationsPage.vue";
 import InvestigationPage from "./pages/InvestigationPageDetails.vue";
 import DocumentCollectionsPage from "./pages/DocumentCollectionsPage.vue";
 import AuditMetricsPage from "./pages/AuditMetricsPage.vue";
+import ChatPage from "./pages/ChatPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: "/", redirect: "/investigations" },
+    {
+      path: "/chat",
+      component: ChatPage,
+      meta: {
+        headerTitle: "Chat",
+        headerSubtitle: "Ollama-powered AI assistant",
+      },
+    },
     {
       path: "/investigations",
       component: InvestigationsPage,

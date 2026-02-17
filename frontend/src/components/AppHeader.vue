@@ -1,12 +1,15 @@
 <template>
   <Menubar
     class="fixed z-40 flex items-center gap-6 justify-between top-4 left-[clamp(1.5rem,3vw,4rem)] right-[clamp(1.5rem,3vw,4rem)] px-4 py-3.5 rounded-[22px] border border-black/12 bg-white/85 backdrop-blur-[10px] shadow-[0_14px_34px_rgba(12,17,24,0.14)]"
-    :model="navItems">
+    :model="navItems"
+  >
     <template #start>
       <div class="flex items-center gap-4">
         <RouterLink
           class="grid place-items-center w-14 h-14 rounded-[18px] bg-[#111722] text-white font-bold tracking-[0.2em] text-xs no-underline"
-          to="/" aria-label="Go to home">
+          to="/"
+          aria-label="Go to home"
+        >
           RPL
         </RouterLink>
         <div class="min-w-0">
@@ -55,6 +58,11 @@ const navItems = computed(() => {
       label: "Audit metrics",
       command: () => router.push("/audit"),
       class: isActive("/audit") ? "menu-item-active" : "",
+    },
+    {
+      label: "Chat",
+      command: () => router.push("/chat"),
+      class: isActive("/chat") ? "menu-item-active" : "",
     },
   ];
 });

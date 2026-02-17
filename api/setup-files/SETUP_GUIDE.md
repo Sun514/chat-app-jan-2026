@@ -2,6 +2,8 @@
 
 A FastAPI application for document processing, email analysis, and LLM-powered investigations with vector embeddings for semantic search.
 
+Commands in this guide assume you run them from the repository root, with backend assets under `api/`.
+
 ---
 
 ## Table of Contents
@@ -126,9 +128,9 @@ mkdir -p api/{routers,services,core,utils}
 mkdir -p api/services/{documents,embeddings,storage,llm,users,investigations}
 mkdir -p api/services/documents/parsers
 mkdir -p config/{cerbos/policies,cerbos/schemas}
-mkdir -p sql
+mkdir -p api/sql
 mkdir -p temp/{uploads,processing,extracted,cache}
-mkdir -p tests
+mkdir -p api/tests
 mkdir -p scripts
 
 # Create __init__.py files
@@ -144,7 +146,7 @@ touch api/services/users/__init__.py
 touch api/services/investigations/__init__.py
 touch api/core/__init__.py
 touch api/utils/__init__.py
-touch tests/__init__.py
+touch api/tests/__init__.py
 ```
 
 ### Final Project Structure
@@ -201,16 +203,23 @@ red-pajama/
 │   │   ├── database.py            # PostgreSQL connection
 │   │   └── storage.py             # S3 client
 │   │
-│   └── utils/
+│   ├── utils/
 │       ├── __init__.py
 │       └── helpers.py
 │
-├── sql/
-│   ├── 001_extensions.sql
-│   ├── 002_users_schema.sql
-│   ├── 003_investigations_schema.sql
-│   ├── 004_documents_schema.sql
-│   └── 005_emails_schema.sql
+│   ├── sql/
+│   │   ├── 001_extensions.sql
+│   │   ├── 002_users_schema.sql
+│   │   ├── 003_investigations_schema.sql
+│   │   ├── 004_documents_schema.sql
+│   │   └── 005_emails_schema.sql
+│   ├── tests/
+│   │   ├── __init__.py
+│   │   ├── test_documents.py
+│   │   └── test_search.py
+│   ├── .env.example
+│   ├── requirements.txt
+│   └── docker-compose.yml
 │
 ├── config/
 │   ├── logging.json
@@ -218,17 +227,11 @@ red-pajama/
 │
 ├── temp/                          # Temporary files (gitignored)
 │
-├── tests/
-│   ├── __init__.py
-│   ├── test_documents.py
-│   └── test_search.py
-│
 ├── scripts/
 │   └── init_db.py
 │
-├── .env.example
 ├── .gitignore
-├── requirements.txt
+├── frontend/
 ├── Dockerfile
 └── README.md
 ```
@@ -273,7 +276,7 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 ### 4.2 Create SQL Schema Files
 
-**sql/001_extensions.sql**
+**api/sql/001_extensions.sql**
 ```sql
 -- Enable required PostgreSQL extensions
 CREATE EXTENSION IF NOT EXISTS vector;
@@ -281,7 +284,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 ```
 
-**sql/002_users_schema.sql**
+**api/sql/002_users_schema.sql**
 ```sql
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
@@ -298,7 +301,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 ```
 
-**sql/003_investigations_schema.sql**
+**api/sql/003_investigations_schema.sql**
 ```sql
 -- Investigations table
 CREATE TABLE IF NOT EXISTS investigations (
@@ -315,7 +318,7 @@ CREATE INDEX IF NOT EXISTS idx_investigations_status ON investigations(status);
 CREATE INDEX IF NOT EXISTS idx_investigations_created_by ON investigations(created_by);
 ```
 
-**sql/004_documents_schema.sql**
+**api/sql/004_documents_schema.sql**
 ```sql
 -- Documents table (stores file metadata)
 CREATE TABLE IF NOT EXISTS documents (
@@ -562,7 +565,7 @@ CREATE TRIGGER documents_updated_at
     EXECUTE FUNCTION update_timestamp();
 ```
 
-**sql/005_emails_schema.sql**
+**api/sql/005_emails_schema.sql**
 ```sql
 -- Emails table
 CREATE TABLE IF NOT EXISTS emails (
@@ -674,14 +677,14 @@ $$ LANGUAGE plpgsql;
 
 ```bash
 # Run all SQL files in order
-psql -U redpajama -d redpajama_db -f sql/001_extensions.sql
-psql -U redpajama -d redpajama_db -f sql/002_users_schema.sql
-psql -U redpajama -d redpajama_db -f sql/003_investigations_schema.sql
-psql -U redpajama -d redpajama_db -f sql/004_documents_schema.sql
-psql -U redpajama -d redpajama_db -f sql/005_emails_schema.sql
+psql -U redpajama -d redpajama_db -f api/sql/001_extensions.sql
+psql -U redpajama -d redpajama_db -f api/sql/002_users_schema.sql
+psql -U redpajama -d redpajama_db -f api/sql/003_investigations_schema.sql
+psql -U redpajama -d redpajama_db -f api/sql/004_documents_schema.sql
+psql -U redpajama -d redpajama_db -f api/sql/005_emails_schema.sql
 
 # Or use a script
-for f in sql/*.sql; do
+for f in api/sql/*.sql; do
     echo "Running $f..."
     psql -U redpajama -d redpajama_db -f "$f"
 done
@@ -704,7 +707,7 @@ source venv/bin/activate
 # venv\Scripts\activate
 ```
 
-### 5.2 Create requirements.txt
+### 5.2 Create api/requirements.txt
 
 ```txt
 # Core Framework
@@ -765,7 +768,7 @@ mypy>=1.8.0
 pip install --upgrade pip
 
 # Install all dependencies
-pip install -r requirements.txt
+pip install -r api/requirements.txt
 
 # Verify sentence-transformers (downloads model on first use)
 python -c "from sentence_transformers import SentenceTransformer; m = SentenceTransformer('all-MiniLM-L6-v2'); print('Model loaded successfully')"
@@ -775,7 +778,7 @@ python -c "from sentence_transformers import SentenceTransformer; m = SentenceTr
 
 ## 6. Configuration
 
-### 6.1 Create .env.example
+### 6.1 Create api/.env.example
 
 ```bash
 # Application
@@ -819,9 +822,9 @@ CORS_ORIGINS=["http://localhost:3000","http://localhost:8080"]
 ### 6.2 Create .env (copy and modify)
 
 ```bash
-cp .env.example .env
-# Edit .env with your actual values
-nano .env
+cp api/.env.example api/.env
+# Edit api/.env with your actual values
+nano api/.env
 ```
 
 ### 6.3 Create .gitignore
@@ -1294,10 +1297,10 @@ curl "http://localhost:8000/documents/search?q=quarterly%20revenue&limit=10"
 
 ```bash
 # Run all tests
-pytest tests/ -v
+pytest api/tests/ -v
 
 # Run with coverage
-pytest tests/ --cov=api --cov-report=html
+pytest api/tests/ --cov=api --cov-report=html
 ```
 
 ---
@@ -1353,13 +1356,13 @@ psql -U redpajama -d redpajama_db -c "CREATE EXTENSION vector;"
 # 4. Clone project and setup Python
 git clone <your-repo> red-pajama && cd red-pajama
 python3.11 -m venv venv && source venv/bin/activate
-pip install -r requirements.txt
+pip install -r api/requirements.txt
 
 # 5. Configure environment
-cp .env.example .env && nano .env
+cp api/.env.example api/.env && nano api/.env
 
 # 6. Run database migrations
-for f in sql/*.sql; do psql -U redpajama -d redpajama_db -f "$f"; done
+for f in api/sql/*.sql; do psql -U redpajama -d redpajama_db -f "$f"; done
 
 # 7. Start application
 uvicorn api.main:app --reload

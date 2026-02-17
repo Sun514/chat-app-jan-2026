@@ -41,7 +41,7 @@
     <main class="relative z-10 grid gap-8 reveal">
       <section class="grid gap-6 grid-cols-[repeat(auto-fit,minmax(min(420px,100%),1fr))]">
         <article
-          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)] max-h-[480px]">
           <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
               <p class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0">
@@ -79,7 +79,7 @@
         </article>
 
         <article
-          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)] max-h-[480px]">
           <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
               <p class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0">

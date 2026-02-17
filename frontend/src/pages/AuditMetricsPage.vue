@@ -47,7 +47,6 @@
               <p class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0">
                 Model usage
               </p>
-              <h2>Requests by model</h2>
             </div>
             <span
               class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]">{{
@@ -86,7 +85,6 @@
               <p class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0">
                 Module usage
               </p>
-              <h2>Visits by module</h2>
             </div>
             <span
               class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]">{{
@@ -123,13 +121,9 @@
           <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
               <p class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0">
-                Workflow execution
+                Case workflows
               </p>
-              <h2>Case workflows</h2>
             </div>
-            <span
-              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]">{{
-                formatPercent(caseWorkflows.completion_rate_percent) }}</span>
           </div>
           <div
             class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
@@ -155,14 +149,9 @@
           <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
               <p class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0">
-                Speech processing
+                Audio transcriptions
               </p>
-              <h2>Audio transcriptions</h2>
             </div>
-            <span
-              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]">{{
-                formatInteger(audioTranscription.audio_files_transcribed)
-              }}</span>
           </div>
           <div
             class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
@@ -185,13 +174,9 @@
           <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
               <p class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0">
-                Platform reliability
+                API metrics
               </p>
-              <h2>API metrics</h2>
             </div>
-            <span
-              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]">{{
-                formatPercent(usage.success_rate_percent) }}</span>
           </div>
           <div
             class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">

@@ -1,20 +1,13 @@
 <template>
   <PageShell footer-text="Red Pajama Labs · Document collections">
 
-    <section
-      class="relative z-10 grid gap-8 grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]"
-    >
+    <section class="relative z-10 grid gap-8 grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
       <div
-        class="relative z-10 flex flex-col gap-6 rounded-4xl p-10 bg-white/92 border border-white/50 shadow-[0_24px_60px_rgba(11,17,25,0.18)] reveal"
-      >
-        <p
-          class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
-        >
+        class="relative z-10 flex flex-col gap-6 rounded-4xl p-10 bg-white/92 border border-white/50 shadow-[0_24px_60px_rgba(11,17,25,0.18)] reveal">
+        <p class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0">
           Collection hub
         </p>
-        <h1
-          class="font-[Playfair_Display] text-3xl md:text-4xl lg:text-[clamp(2.2rem,3.4vw,3.6rem)] font-semibold"
-        >
+        <h1 class="font-[Playfair_Display] text-3xl md:text-4xl lg:text-[clamp(2.2rem,3.4vw,3.6rem)] font-semibold">
           Build folders that investigations can reuse.
         </h1>
         <p class="text-[#4b5664] text-[1.05rem] m-0">
@@ -23,54 +16,31 @@
         </p>
         <div class="grid gap-3 rounded-[18px] p-4 px-5 bg-black/6">
           <div class="flex flex-col gap-0.5">
-            <span class="text-xs uppercase tracking-[0.18em] text-[#4b5664]"
-              >Folders</span
-            >
+            <span class="text-xs uppercase tracking-[0.18em] text-[#4b5664]">Folders</span>
             <span class="font-semibold">{{ state.items.length }}</span>
           </div>
           <div class="flex flex-col gap-0.5">
-            <span class="text-xs uppercase tracking-[0.18em] text-[#4b5664]"
-              >Files stored</span
-            >
+            <span class="text-xs uppercase tracking-[0.18em] text-[#4b5664]">Files stored</span>
             <span class="font-semibold">{{ totalFiles }}</span>
           </div>
         </div>
       </div>
 
       <Card
-        class="relative z-10 grid gap-5 rounded-[28px] p-8 bg-white border border-black/8 shadow-[0_24px_60px_rgba(11,17,25,0.18)] reveal"
-      >
+        class="relative z-10 grid gap-5 rounded-[28px] p-8 bg-white border border-black/8 shadow-[0_24px_60px_rgba(11,17,25,0.18)] reveal">
         <template #content>
           <form @submit.prevent="create" class="grid gap-5">
-            <p
-              class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
-            >
+            <p class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0">
               New folder
             </p>
             <div class="flex flex-col gap-2">
-              <label
-                class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]"
-                >Folder name</label
-              >
-              <InputText
-                v-model="form.name"
-                placeholder="Vendor contracts"
-                required
-                fluid
-              />
+              <label class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]">Folder name</label>
+              <InputText v-model="form.name" placeholder="Vendor contracts" required fluid />
             </div>
             <div class="flex flex-col gap-2">
-              <label
-                class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]"
-                >Description</label
-              >
-              <Textarea
-                v-model="form.description"
-                rows="3"
-                autoResize
-                placeholder="What belongs in this collection?"
-                fluid
-              />
+              <label class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]">Description</label>
+              <Textarea v-model="form.description" rows="3" autoResize placeholder="What belongs in this collection?"
+                fluid />
             </div>
             <Button class="w-full" type="submit" label="Create folder" />
           </form>
@@ -79,20 +49,15 @@
     </section>
 
     <section class="relative z-10 grid gap-6 reveal">
-      <Card
-        v-if="state.items.length === 0"
-        class="flex justify-between gap-4 rounded-[18px] border border-black/10 px-4 py-3.5 bg-white"
-      >
+      <Card v-if="state.items.length === 0"
+        class="flex justify-between gap-4 rounded-[18px] border border-black/10 px-4 py-3.5 bg-white">
         <template #content>
           No collections yet. Create a folder to start organizing uploads.
         </template>
       </Card>
 
-      <Card
-        v-for="collection in state.items"
-        :key="collection.id"
-        class="relative z-10 grid gap-6 rounded-3xl p-7 bg-white border border-black/8 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
-      >
+      <Card v-for="collection in state.items" :key="collection.id"
+        class="relative z-10 grid gap-6 rounded-3xl p-7 bg-white border border-black/8 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
         <template #content>
           <div class="flex justify-between gap-4 items-start">
             <div>
@@ -105,31 +70,16 @@
                 {{ collection.files.length }} files
               </p>
             </div>
-            <Button
-              severity="secondary"
-              variant="outlined"
-              label="Remove folder"
-              @click="removeCollection(collection.id)"
-            />
+            <Button severity="secondary" variant="outlined" label="Remove folder"
+              @click="removeCollection(collection.id)" />
           </div>
 
           <div class="flex flex-wrap my-4 gap-4 items-center justify-between">
-            <div
-              class="grid gap-3 rounded-[22px] px-5 py-4 border border-dashed border-black/20 bg-black/3"
-            >
-              <FileUpload
-                :key="inputKeys[collection.id] || 0"
-                mode="basic"
-                name="files[]"
-                :multiple="true"
-                :customUpload="true"
-                :auto="false"
-                chooseLabel="Browse files"
-                :accept="acceptedFileTypes"
-                @select="
+            <div class="grid gap-3 rounded-[22px] px-5 py-4 border border-dashed border-black/20 bg-black/3">
+              <FileUpload :key="inputKeys[collection.id] || 0" mode="basic" name="files[]" :multiple="true"
+                :customUpload="true" :auto="false" chooseLabel="Browse files" :accept="acceptedFileTypes" @select="
                   (event) => onCollectionFileChange(collection.id, event)
-                "
-              />
+                " />
               <div>
                 <p class="m-0 font-semibold">
                   {{ uploadSummary(collection.id) }}
@@ -139,40 +89,24 @@
                 }}</span>
               </div>
             </div>
-            <Button
-              type="button"
-              label="Add to folder"
-              @click="addFiles(collection.id)"
-              :disabled="
-                !uploads[collection.id] || uploads[collection.id].length === 0
-              "
-            />
+            <Button type="button" label="Add to folder" @click="addFiles(collection.id)" :disabled="!uploads[collection.id] || uploads[collection.id].length === 0
+              " />
           </div>
 
           <div class="grid gap-3">
-            <div
-              v-if="collection.files.length === 0"
-              class="text-[#4b5664] text-sm"
-            >
+            <div v-if="collection.files.length === 0" class="text-[#4b5664] text-sm">
               Upload files to populate this folder.
             </div>
-            <div
-              v-for="file in collection.files"
-              :key="file.id"
-              class="flex justify-between gap-4 rounded-2xl border border-black/8 px-4 py-3.5 bg-white"
-            >
+            <div v-for="file in collection.files" :key="file.id"
+              class="flex justify-between gap-4 rounded-2xl border border-black/8 px-4 py-3.5 bg-white">
               <div>
                 <h4 class="m-0 text-[0.95rem]">{{ file.name }}</h4>
                 <p class="mt-1 text-[#4b5664] text-[0.78rem]">
                   {{ file.sizeLabel }} · {{ file.type }} · {{ file.uploadedAt }}
                 </p>
               </div>
-              <Button
-                severity="secondary"
-                variant="outlined"
-                label="Remove"
-                @click="removeFile(collection.id, file.id)"
-              />
+              <Button severity="secondary" variant="outlined" label="Remove"
+                @click="removeFile(collection.id, file.id)" />
             </div>
           </div>
         </template>

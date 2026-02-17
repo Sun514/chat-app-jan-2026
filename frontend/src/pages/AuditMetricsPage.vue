@@ -1,21 +1,15 @@
 <template>
   <PageShell footer-text="Red Pajama Labs · Audit metrics">
 
-    <Message
-      v-if="error"
-      severity="error"
-      class="relative z-10 m-0 rounded-xl border border-red-700/20 text-[#9f2d1f] bg-red-700/10 text-sm px-4 py-3 reveal"
-      >{{ error }}</Message
-    >
+    <Message v-if="error" severity="error"
+      class="relative z-10 m-0 rounded-xl border border-red-700/20 text-[#9f2d1f] bg-red-700/10 text-sm px-4 py-3 reveal">
+      {{ error }}</Message>
 
-    <section
-      class="relative z-10 grid gap-5 grid-cols-[repeat(auto-fit,minmax(220px,1fr))] reveal"
-    >
+    <section class="relative z-10 grid gap-5 grid-cols-[repeat(auto-fit,minmax(220px,1fr))] reveal">
       <Card
-        class="relative z-10 rounded-[26px] p-7 grid gap-1.5 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
-      >
+        class="relative z-10 rounded-[26px] p-7 grid gap-1.5 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
         <template #content>
-          <p class="m-0 text-sm uppercase tracking-[0.18em] text-[#4b5664]">
+          <p class="m-0 text-md font-bold uppercase tracking-[0.18em] text-[#4b5664]">
             Users total
           </p>
           <h3>{{ formatInteger(users.total_users) }}</h3>
@@ -23,10 +17,9 @@
         </template>
       </Card>
       <Card
-        class="relative z-10 rounded-[26px] p-7 grid gap-1.5 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
-      >
+        class="relative z-10 rounded-[26px] p-7 grid gap-1.5 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
         <template #content>
-          <p class="m-0 text-sm uppercase tracking-[0.18em] text-[#4b5664]">
+          <p class="m-0 text-md font-bold uppercase tracking-[0.18em] text-[#4b5664]">
             Active users (30d)
           </p>
           <h3>{{ formatInteger(users.active_users_30d) }}</h3>
@@ -34,10 +27,9 @@
         </template>
       </Card>
       <Card
-        class="relative z-10 rounded-[26px] p-7 grid gap-1.5 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
-      >
+        class="relative z-10 rounded-[26px] p-7 grid gap-1.5 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
         <template #content>
-          <p class="m-0 text-sm uppercase tracking-[0.18em] text-[#4b5664]">
+          <p class="m-0 text-md font-bold uppercase tracking-[0.18em] text-[#4b5664]">
             New users (7d)
           </p>
           <h3>{{ formatInteger(users.new_users_7d) }}</h3>
@@ -47,53 +39,35 @@
     </section>
 
     <main class="relative z-10 grid gap-8 reveal">
-      <section
-        class="grid gap-6 grid-cols-[repeat(auto-fit,minmax(min(420px,100%),1fr))]"
-      >
+      <section class="grid gap-6 grid-cols-[repeat(auto-fit,minmax(min(420px,100%),1fr))]">
         <article
-          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
-        >
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
           <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <p
-                class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
-              >
+              <p class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0">
                 Model usage
               </p>
               <h2>Requests by model</h2>
             </div>
             <span
-              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]"
-              >{{
+              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]">{{
                 topModel
                   ? `${topModel.model} · ${formatPercent(topModel.computed_share)}`
                   : "--"
-              }}</span
-            >
+              }}</span>
           </div>
           <div
-            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
-          >
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
             <span class="text-[#4b5664] text-sm">Requests</span>
             <strong>{{ formatInteger(modelRequests.total_requests) }}</strong>
           </div>
-          <div
-            v-if="normalizedModelItems.length > 0"
-            class="flex justify-center gap-5 items-start"
-          >
+          <div v-if="normalizedModelItems.length > 0" class="flex justify-center gap-5 items-start">
             <div class="grid justify-items-center content-start gap-3">
-              <div
-                class="w-130 h-130 max-w-full [&_canvas]:w-full! [&_canvas]:h-full!"
-              >
-                <Chart
-                  type="doughnut"
-                  :data="modelChartData"
-                  :options="doughnutOptions"
-                  :canvasProps="{
-                    role: 'img',
-                    'aria-label': 'Model requests by model chart',
-                  }"
-                />
+              <div class="w-130 h-130 max-w-full [&_canvas]:w-full! [&_canvas]:h-full!">
+                <Chart type="doughnut" :data="modelChartData" :options="doughnutOptions" :canvasProps="{
+                  role: 'img',
+                  'aria-label': 'Model requests by model chart',
+                }" />
               </div>
               <p class="m-0 text-[#4b5664] text-xs uppercase tracking-[0.12em]">
                 Top model: <strong>{{ topModel?.model || "--" }}</strong>
@@ -106,49 +80,33 @@
         </article>
 
         <article
-          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
-        >
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
           <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <p
-                class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
-              >
-                Navigation usage
+              <p class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0">
+                Module usage
               </p>
               <h2>Visits by module</h2>
             </div>
             <span
-              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]"
-              >{{
+              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]">{{
                 topModule
                   ? `${topModule.module} · ${formatPercent(topModule.computed_share)}`
                   : "--"
-              }}</span
-            >
+              }}</span>
           </div>
           <div
-            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
-          >
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
             <span class="text-[#4b5664] text-sm">Total visits</span>
             <strong>{{ formatInteger(moduleTraffic.total_visits) }}</strong>
           </div>
-          <div
-            v-if="normalizedModuleItems.length > 0"
-            class="flex justify-center gap-5 items-start"
-          >
+          <div v-if="normalizedModuleItems.length > 0" class="flex justify-center gap-5 items-start">
             <div class="grid justify-items-center content-start gap-3">
-              <div
-                class="w-130 h-130 max-w-full [&_canvas]:w-full! [&_canvas]:h-full!"
-              >
-                <Chart
-                  type="doughnut"
-                  :data="moduleChartData"
-                  :options="doughnutOptions"
-                  :canvasProps="{
-                    role: 'img',
-                    'aria-label': 'Visits by module chart',
-                  }"
-                />
+              <div class="w-130 h-130 max-w-full [&_canvas]:w-full! [&_canvas]:h-full!">
+                <Chart type="doughnut" :data="moduleChartData" :options="doughnutOptions" :canvasProps="{
+                  role: 'img',
+                  'aria-label': 'Visits by module chart',
+                }" />
               </div>
               <p class="m-0 text-[#4b5664] text-xs uppercase tracking-[0.12em]">
                 Top module: <strong>{{ topModule?.module || "--" }}</strong>
@@ -161,37 +119,30 @@
         </article>
 
         <article
-          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
-        >
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
           <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <p
-                class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
-              >
+              <p class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0">
                 Workflow execution
               </p>
               <h2>Case workflows</h2>
             </div>
             <span
-              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]"
-              >{{ formatPercent(caseWorkflows.completion_rate_percent) }}</span
-            >
+              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]">{{
+                formatPercent(caseWorkflows.completion_rate_percent) }}</span>
           </div>
           <div
-            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
-          >
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
             <span class="text-[#4b5664] text-sm">Started</span>
             <strong>{{ formatInteger(caseWorkflows.started) }}</strong>
           </div>
           <div
-            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
-          >
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
             <span class="text-[#4b5664] text-sm">Completed</span>
             <strong>{{ formatInteger(caseWorkflows.completed) }}</strong>
           </div>
           <div
-            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
-          >
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
             <span class="text-[#4b5664] text-sm">Completion rate</span>
             <strong>{{
               formatPercent(caseWorkflows.completion_rate_percent)
@@ -200,35 +151,28 @@
         </article>
 
         <article
-          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
-        >
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
           <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <p
-                class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
-              >
+              <p class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0">
                 Speech processing
               </p>
               <h2>Audio transcriptions</h2>
             </div>
             <span
-              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]"
-              >{{
+              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]">{{
                 formatInteger(audioTranscription.audio_files_transcribed)
-              }}</span
-            >
+              }}</span>
           </div>
           <div
-            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
-          >
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
             <span class="text-[#4b5664] text-sm">Files transcribed</span>
             <strong>{{
               formatInteger(audioTranscription.audio_files_transcribed)
             }}</strong>
           </div>
           <div
-            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
-          >
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
             <span class="text-[#4b5664] text-sm">Total duration</span>
             <strong>{{
               formatDuration(audioTranscription.total_duration_seconds)
@@ -237,37 +181,30 @@
         </article>
 
         <article
-          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
-        >
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
           <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <p
-                class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
-              >
+              <p class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0">
                 Platform reliability
               </p>
               <h2>API metrics</h2>
             </div>
             <span
-              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]"
-              >{{ formatPercent(usage.success_rate_percent) }}</span
-            >
+              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]">{{
+                formatPercent(usage.success_rate_percent) }}</span>
           </div>
           <div
-            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
-          >
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
             <span class="text-[#4b5664] text-sm">API requests (24h)</span>
             <strong>{{ formatInteger(usage.total_api_requests_24h) }}</strong>
           </div>
           <div
-            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
-          >
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
             <span class="text-[#4b5664] text-sm">Success rate</span>
             <strong>{{ formatPercent(usage.success_rate_percent) }}</strong>
           </div>
           <div
-            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
-          >
+            class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
             <span class="text-[#4b5664] text-sm">Avg requests per user</span>
             <strong>{{ formatDecimal(usage.avg_requests_per_user) }}</strong>
           </div>

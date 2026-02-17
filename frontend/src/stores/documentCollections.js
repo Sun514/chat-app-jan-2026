@@ -11,13 +11,17 @@ const formatBytes = (value) => {
 };
 
 const normalizeCollection = (collection) => ({
-  id: collection.id || `col-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+  id:
+    collection.id ||
+    `col-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
   name: collection.name || "Untitled folder",
   description: collection.description || "",
   createdAt: collection.createdAt || new Date().toLocaleDateString(),
   files: Array.isArray(collection.files)
     ? collection.files.map((file) => ({
-        id: file.id || `file-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+        id:
+          file.id ||
+          `file-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
         name: file.name || "Untitled",
         bytes: typeof file.bytes === "number" ? file.bytes : 0,
         sizeLabel: file.sizeLabel || formatBytes(file.bytes || 0),
@@ -98,7 +102,8 @@ const removeFileFromCollection = (collectionId, fileId) => {
   persist(state.items);
 };
 
-const getCollection = (id) => state.items.find((item) => item.id === id) || null;
+const getCollection = (id) =>
+  state.items.find((item) => item.id === id) || null;
 
 export {
   state,

@@ -90,7 +90,8 @@ const setLastQuery = (id, query) => {
   persist(state.items);
 };
 
-const getInvestigation = (id) => state.items.find((item) => item.id === id) || null;
+const getInvestigation = (id) =>
+  state.items.find((item) => item.id === id) || null;
 
 const toggleInvestigationCollection = (id, collectionId) => {
   const target = state.items.find((item) => item.id === id);
@@ -99,7 +100,9 @@ const toggleInvestigationCollection = (id, collectionId) => {
     target.collectionIds = [];
   }
   if (target.collectionIds.includes(collectionId)) {
-    target.collectionIds = target.collectionIds.filter((entry) => entry !== collectionId);
+    target.collectionIds = target.collectionIds.filter(
+      (entry) => entry !== collectionId,
+    );
   } else {
     target.collectionIds = [...target.collectionIds, collectionId];
   }

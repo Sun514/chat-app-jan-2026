@@ -1,26 +1,18 @@
 <template>
-  <PageShell
-    :footer-text="
-      investigation ? 'Red Pajama Labs · File intelligence console' : ''
-    "
-  >
+  <PageShell :footer-text="investigation ? 'Red Pajama Labs · File intelligence console' : ''
+    ">
 
-    <section
-      v-if="!investigation"
-      class="relative z-10 grid gap-4 rounded-[28px] p-10 text-left bg-white/92 border border-white/50 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
-    >
+    <section v-if="!investigation"
+      class="relative z-10 grid gap-4 rounded-[28px] p-10 text-left bg-white/92 border border-white/50 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
       <h1>Investigation not found</h1>
       <p>Return to the case hub to create or select a case.</p>
       <Button label="Go to case hub" @click="router.push('/investigations')" />
     </section>
 
     <template v-else>
-      <section
-        class="relative z-10 grid gap-5 grid-cols-[repeat(auto-fit,minmax(220px,1fr))] reveal"
-      >
+      <section class="relative z-10 grid gap-5 grid-cols-[repeat(auto-fit,minmax(220px,1fr))] reveal">
         <Card
-          class="relative z-10 rounded-[26px] p-7 grid gap-1.5 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
-        >
+          class="relative z-10 rounded-[26px] p-7 grid gap-1.5 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
           <template #content>
             <p class="m-0 text-sm uppercase tracking-[0.18em] text-[#4b5664]">
               Evidence logged
@@ -30,8 +22,7 @@
           </template>
         </Card>
         <Card
-          class="relative z-10 rounded-[26px] p-7 grid gap-1.5 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
-        >
+          class="relative z-10 rounded-[26px] p-7 grid gap-1.5 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
           <template #content>
             <p class="m-0 text-sm uppercase tracking-[0.18em] text-[#4b5664]">
               Last ingest
@@ -41,8 +32,7 @@
           </template>
         </Card>
         <Card
-          class="relative z-10 rounded-[26px] p-7 grid gap-1.5 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
-        >
+          class="relative z-10 rounded-[26px] p-7 grid gap-1.5 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
           <template #content>
             <p class="m-0 text-sm uppercase tracking-[0.18em] text-[#4b5664]">
               Query focus
@@ -55,48 +45,32 @@
 
       <main class="relative z-10 grid gap-8">
         <section
-          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)] reveal"
-        >
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)] reveal">
           <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <p
-                class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
-              >
+              <p class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0">
                 Document collections
               </p>
               <h2>Attach shared folders</h2>
             </div>
             <span
-              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-black/12 text-[#4b5664]"
-              >Shared</span
-            >
+              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-black/12 text-[#4b5664]">Shared</span>
           </div>
 
           <div class="grid gap-7 grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
             <div class="grid gap-4">
-              <p
-                class="m-0 text-xs uppercase tracking-[0.16em] text-[#4b5664] font-semibold"
-              >
+              <p class="m-0 text-xs uppercase tracking-[0.16em] text-[#4b5664] font-semibold">
                 Available folders
               </p>
-              <div
-                v-if="collectionsState.items.length === 0"
-                class="text-[#4b5664] text-sm"
-              >
+              <div v-if="collectionsState.items.length === 0" class="text-[#4b5664] text-sm">
                 No collections yet. Create one to share files across
                 investigations.
               </div>
               <div v-else class="flex-col gap-3">
-                <label
-                  v-for="collection in collectionsState.items"
-                  :key="collection.id"
-                  class="flex gap-3 items-start rounded-2xl border border-black/8 px-4 py-3 bg-white cursor-pointer"
-                >
-                  <Checkbox
-                    binary
-                    :modelValue="isCollectionSelected(collection.id)"
-                    @update:modelValue="toggleCollection(collection.id)"
-                  />
+                <label v-for="collection in collectionsState.items" :key="collection.id"
+                  class="flex gap-3 items-start rounded-2xl border border-black/8 px-4 py-3 bg-white cursor-pointer">
+                  <Checkbox binary :modelValue="isCollectionSelected(collection.id)"
+                    @update:modelValue="toggleCollection(collection.id)" />
                   <div>
                     <h4 class="m-0 text-[0.95rem]">{{ collection.name }}</h4>
                     <p class="mt-1 text-[#4b5664] text-[0.8rem]">
@@ -108,30 +82,21 @@
               </div>
               <RouterLink
                 class="inline-flex items-center justify-center rounded-full border border-[rgba(12,17,24,0.2)] bg-transparent px-6 py-3.5 text-[0.95rem] font-semibold text-[#0c1118] no-underline transition-transform duration-200 hover:-translate-y-px"
-                to="/collections"
-              >
+                to="/collections">
                 Manage collections
               </RouterLink>
             </div>
 
             <div class="grid gap-4">
-              <p
-                class="m-0 text-xs uppercase tracking-[0.16em] text-[#4b5664] font-semibold"
-              >
+              <p class="m-0 text-xs uppercase tracking-[0.16em] text-[#4b5664] font-semibold">
                 Included files
               </p>
-              <div
-                v-if="selectedCollectionFiles.length === 0"
-                class="text-[#4b5664] text-sm"
-              >
+              <div v-if="selectedCollectionFiles.length === 0" class="text-[#4b5664] text-sm">
                 Select a folder to surface shared evidence here.
               </div>
               <div v-else class="grid gap-3">
-                <div
-                  v-for="file in selectedCollectionFiles"
-                  :key="file.id"
-                  class="flex justify-between gap-4 rounded-2xl border border-black/8 px-4 py-3.5 bg-white"
-                >
+                <div v-for="file in selectedCollectionFiles" :key="file.id"
+                  class="flex justify-between gap-4 rounded-2xl border border-black/8 px-4 py-3.5 bg-white">
                   <div>
                     <h4 class="m-0 text-[0.95rem]">{{ file.name }}</h4>
                     <p class="mt-1 text-[#4b5664] text-[0.78rem]">
@@ -146,38 +111,22 @@
 
         <section class="grid gap-8 grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <section
-            class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)] reveal"
-          >
+            class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)] reveal">
             <div class="flex items-center justify-between gap-4 flex-wrap">
               <div>
-                <p
-                  class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
-                >
+                <p class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0">
                   Evidence intake
                 </p>
                 <h2>Upload files</h2>
               </div>
               <span
-                class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]"
-                >Secure</span
-              >
+                class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]">Secure</span>
             </div>
 
-            <div
-              class="grid gap-3 rounded-[22px] p-5 border border-dashed border-black/20 bg-black/3"
-            >
-              <FileUpload
-                :key="uploadInputKey"
-                name="files[]"
-                :multiple="true"
-                :customUpload="true"
-                :showUploadButton="false"
-                :showCancelButton="false"
-                :auto="false"
-                chooseLabel="Select evidence files"
-                :accept="acceptedFileTypes"
-                @select="onFileChange"
-              >
+            <div class="grid gap-3 rounded-[22px] p-5 border border-dashed border-black/20 bg-black/3">
+              <FileUpload :key="uploadInputKey" name="files[]" :multiple="true" :customUpload="true"
+                :showUploadButton="false" :showCancelButton="false" :auto="false" chooseLabel="Select evidence files"
+                :accept="acceptedFileTypes" @select="onFileChange">
                 <template #empty>
                   <p class="m-0 font-semibold">Drop or select files</p>
                 </template>
@@ -192,112 +141,71 @@
               </div>
             </div>
 
-            <div
-              class="grid gap-4 grid-cols-[repeat(auto-fit,minmax(180px,1fr))]"
-            >
+            <div class="grid gap-4 grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
               <div class="flex flex-col gap-2">
-                <label
-                  class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]"
-                  >Chunk size</label
-                >
-                <InputNumber
-                  v-model="uploadForm.chunkSize"
-                  :min="100"
-                  :max="10000"
-                  fluid
-                />
+                <label class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]">Chunk size</label>
+                <InputNumber v-model="uploadForm.chunkSize" :min="100" :max="10000" fluid />
               </div>
               <div class="flex flex-col gap-2">
-                <label
-                  class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]"
-                  >Chunk overlap</label
-                >
-                <InputNumber
-                  v-model="uploadForm.chunkOverlap"
-                  :min="0"
-                  :max="1000"
-                  fluid
-                />
+                <label class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]">Chunk overlap</label>
+                <InputNumber v-model="uploadForm.chunkOverlap" :min="0" :max="1000" fluid />
               </div>
             </div>
 
-            <Button
-              class="w-full"
-              @click="uploadDocument"
-              :disabled="loading.upload || uploadForm.files.length === 0"
-              :label="loading.upload ? 'Uploading...' : 'Upload evidence'"
-            />
+            <Button class="w-full" @click="uploadDocument" :disabled="loading.upload || uploadForm.files.length === 0"
+              :label="loading.upload ? 'Uploading...' : 'Upload evidence'" />
 
-            <div
-              class="rounded-[18px] p-4 px-5 text-[#4b5664] text-sm bg-black/5"
-            >
+            <div class="rounded-[18px] p-4 px-5 text-[#4b5664] text-sm bg-black/5">
               <strong class="text-[#0c1118]">Ingest tips:</strong> Keep chunks
               near 1000 tokens, and upload source documents before asking
               comparative questions.
             </div>
 
-            <div
-              class="rounded-[18px] p-5 text-[0.85rem] bg-[#0f1722] text-[#f7f9fb]"
-              v-if="uploadResult"
-            >
+            <div class="rounded-[18px] p-5 text-[0.85rem] bg-[#0f1722] text-[#f7f9fb]" v-if="uploadResult">
               <h4>Upload response</h4>
               <pre class="mt-1.5 whitespace-pre-wrap">{{ uploadResult }}</pre>
             </div>
           </section>
 
           <section
-            class="relative z-10 grid gap-6 rounded-[28px] p-8 bg-white/92 border border-white/45 shadow-[0_24px_60px_rgba(11,17,25,0.18)] reveal"
-          >
+            class="relative z-10 grid gap-6 rounded-[28px] p-8 bg-white/92 border border-white/45 shadow-[0_24px_60px_rgba(11,17,25,0.18)] reveal">
             <div class="flex items-center justify-between gap-4 flex-wrap">
               <div>
-                <p
-                  class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
-                >
+                <p class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0">
                   Ledger
                 </p>
                 <h2>Evidence timeline</h2>
               </div>
               <span
-                class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-black/12 text-[#4b5664]"
-                >Case activity</span
-              >
+                class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-black/12 text-[#4b5664]">Case
+                activity</span>
             </div>
 
             <div class="grid gap-4 grid-cols-1">
-              <div
-                v-if="investigation.documents.length === 0"
-                class="flex justify-between gap-4 rounded-[18px] border border-black/10 px-4 py-3.5 bg-white"
-              >
+              <div v-if="investigation.documents.length === 0"
+                class="flex justify-between gap-4 rounded-[18px] border border-black/10 px-4 py-3.5 bg-white">
                 Upload a file to start the investigation ledger.
               </div>
-              <div
-                v-for="file in investigation.documents"
-                :key="file.id"
-                class="flex justify-between gap-4 rounded-[18px] border border-black/10 px-4 py-3.5 bg-white"
-              >
+              <div v-for="file in investigation.documents" :key="file.id"
+                class="flex justify-between gap-4 rounded-[18px] border border-black/10 px-4 py-3.5 bg-white">
                 <div>
                   <h4 class="m-0 text-[0.95rem]">{{ file.name }}</h4>
                   <p class="mt-1 text-[#4b5664] text-[0.78rem]">
                     {{ file.timestamp }}
                   </p>
                 </div>
-                <div
-                  class="flex flex-col gap-1 items-end text-xs text-[#4b5664]"
-                >
+                <div class="flex flex-col gap-1 items-end text-xs text-[#4b5664]">
                   <span>{{ file.size }}</span>
-                  <span
-                    :class="[
-                      'font-semibold uppercase tracking-[0.12em] text-[0.7rem]',
-                      file.status.toLowerCase() === 'indexed'
-                        ? 'text-[#0f7b67]'
-                        : file.status.toLowerCase() === 'uploading'
-                          ? 'text-[#b96b00]'
-                          : file.status.toLowerCase() === 'failed'
-                            ? 'text-[#c0392b]'
-                            : '',
-                    ]"
-                    >{{ file.status }}</span
-                  >
+                  <span :class="[
+                    'font-semibold uppercase tracking-[0.12em] text-[0.7rem]',
+                    file.status.toLowerCase() === 'indexed'
+                      ? 'text-[#0f7b67]'
+                      : file.status.toLowerCase() === 'uploading'
+                        ? 'text-[#b96b00]'
+                        : file.status.toLowerCase() === 'failed'
+                          ? 'text-[#c0392b]'
+                          : '',
+                  ]">{{ file.status }}</span>
                 </div>
               </div>
             </div>
@@ -305,99 +213,50 @@
         </section>
 
         <section
-          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)] w-full reveal"
-        >
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)] w-full reveal">
           <div class="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <p
-                class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0"
-              >
+              <p class="uppercase tracking-[0.26em] text-xs font-semibold text-[#4b5664] m-0">
                 Query
               </p>
               <h2>Interrogate the evidence</h2>
             </div>
             <span
-              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-black/12 text-[#4b5664]"
-              >Live</span
-            >
+              class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-black/12 text-[#4b5664]">Live</span>
           </div>
 
           <div class="flex flex-col gap-2">
-            <label
-              class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]"
-              >Investigation query</label
-            >
-            <Textarea
-              v-model="searchForm.query"
-              rows="4"
-              autoResize
-              placeholder="Which emails mention the contract renewal?"
-              @keydown="onQueryKeydown"
-              fluid
-            />
+            <label class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]">Investigation query</label>
+            <Textarea v-model="searchForm.query" rows="4" autoResize
+              placeholder="Which emails mention the contract renewal?" @keydown="onQueryKeydown" fluid />
           </div>
 
-          <div
-            class="grid gap-4 grid-cols-[repeat(auto-fit,minmax(180px,1fr))]"
-          >
+          <div class="grid gap-4 grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
             <div class="flex flex-col gap-2">
-              <label
-                class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]"
-                >Limit</label
-              >
-              <InputNumber
-                v-model="searchForm.limit"
-                :min="1"
-                :max="100"
-                @keydown="onQueryKeydown"
-                fluid
-              />
+              <label class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]">Limit</label>
+              <InputNumber v-model="searchForm.limit" :min="1" :max="100" @keydown="onQueryKeydown" fluid />
             </div>
             <div class="flex flex-col gap-2">
-              <label
-                class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]"
-                >Similarity threshold</label
-              >
-              <InputNumber
-                v-model="searchForm.threshold"
-                :min="0"
-                :max="1"
-                :step="0.05"
-                :minFractionDigits="2"
-                :maxFractionDigits="2"
-                @keydown="onQueryKeydown"
-                fluid
-              />
+              <label class="text-xs font-semibold text-[#4b5664] uppercase tracking-[0.16em]">Similarity
+                threshold</label>
+              <InputNumber v-model="searchForm.threshold" :min="0" :max="1" :step="0.05" :minFractionDigits="2"
+                :maxFractionDigits="2" @keydown="onQueryKeydown" fluid />
             </div>
           </div>
 
           <div class="flex flex-wrap gap-3">
-            <Button
-              @click="runSearch"
-              :disabled="loading.search || !searchForm.query"
-              :label="loading.search ? 'Searching...' : 'Run query'"
-            />
-            <Button
-              severity="secondary"
-              variant="outlined"
-              @click="clearSearch"
-              :disabled="!searchForm.query && searchResults.length === 0"
-              label="Clear"
-            />
+            <Button @click="runSearch" :disabled="loading.search || !searchForm.query"
+              :label="loading.search ? 'Searching...' : 'Run query'" />
+            <Button severity="secondary" variant="outlined" @click="clearSearch"
+              :disabled="!searchForm.query && searchResults.length === 0" label="Clear" />
           </div>
 
           <div class="grid gap-4">
-            <div
-              v-if="searchResults.length === 0"
-              class="text-[#4b5664] text-sm"
-            >
+            <div v-if="searchResults.length === 0" class="text-[#4b5664] text-sm">
               No matches yet. Run a query to surface evidence.
             </div>
-            <div
-              v-for="item in searchResults"
-              :key="item.chunk_id"
-              class="rounded-[18px] border border-black/8 p-4 px-5 bg-white shadow-[0_10px_20px_rgba(12,17,24,0.06)]"
-            >
+            <div v-for="item in searchResults" :key="item.chunk_id"
+              class="rounded-[18px] border border-black/8 p-4 px-5 bg-white shadow-[0_10px_20px_rgba(12,17,24,0.06)]">
               <div class="flex justify-between items-center gap-4">
                 <h4 class="m-0 text-base">{{ item.filename }}</h4>
                 <span class="font-semibold text-sm text-[#c84b00]">{{

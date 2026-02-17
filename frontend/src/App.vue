@@ -1,9 +1,5 @@
 <template>
-  <AppHeader
-    v-if="headerTitle"
-    :title="headerTitle"
-    :subtitle="headerSubtitle"
-  />
+  <AppHeader v-if="headerTitle" :title="headerTitle" :subtitle="headerSubtitle" />
   <RouterView />
 </template>
 

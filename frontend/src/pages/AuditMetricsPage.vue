@@ -1,6 +1,5 @@
 <template>
   <PageShell footer-text="Red Pajama Labs · Audit metrics">
-
     <Message v-if="error" severity="error"
       class="relative z-10 m-0 rounded-xl border border-red-700/20 text-[#9f2d1f] bg-red-700/10 text-sm px-4 py-3 reveal">
       {{ error }}</Message>
@@ -140,7 +139,7 @@
             <span class="text-[#4b5664] text-sm">Completion rate</span>
             <strong>{{
               formatPercent(caseWorkflows.completion_rate_percent)
-            }}</strong>
+              }}</strong>
           </div>
         </article>
 
@@ -158,14 +157,14 @@
             <span class="text-[#4b5664] text-sm">Files transcribed</span>
             <strong>{{
               formatInteger(audioTranscription.audio_files_transcribed)
-            }}</strong>
+              }}</strong>
           </div>
           <div
             class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
             <span class="text-[#4b5664] text-sm">Total duration</span>
             <strong>{{
               formatDuration(audioTranscription.total_duration_seconds)
-            }}</strong>
+              }}</strong>
           </div>
         </article>
 
@@ -196,7 +195,6 @@
         </article>
       </section>
     </main>
-
   </PageShell>
 </template>
 

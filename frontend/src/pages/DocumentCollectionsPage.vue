@@ -86,7 +86,7 @@
                 </p>
                 <span class="text-[#4b5664] text-sm">{{
                   uploadSizes(collection.id) || "PDF, DOCX, TXT, CSV, EML"
-                }}</span>
+                  }}</span>
               </div>
             </div>
             <Button type="button" label="Add to folder" @click="addFiles(collection.id)" :disabled="!uploads[collection.id] || uploads[collection.id].length === 0

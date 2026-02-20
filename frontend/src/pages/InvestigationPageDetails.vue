@@ -261,7 +261,7 @@
                 <h4 class="m-0 text-base">{{ item.filename }}</h4>
                 <span class="font-semibold text-sm text-[#c84b00]">{{
                   item.similarity.toFixed(3)
-                }}</span>
+                  }}</span>
               </div>
               <p class="mt-1.5 text-[#4b5664] leading-relaxed">
                 {{ item.content }}

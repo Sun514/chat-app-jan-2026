@@ -8,7 +8,27 @@
       {{ error }}</Message
     >
 
+    <!-- Skeleton: top stat cards -->
     <section
+      v-if="loading"
+      class="relative z-10 grid gap-4 grid-cols-[repeat(auto-fit,minmax(200px,1fr))] reveal"
+    >
+      <Card
+        v-for="n in 3"
+        :key="n"
+        class="relative z-10 rounded-[20px] p-5 grid gap-3 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+      >
+        <template #content>
+          <Skeleton width="60%" height="0.875rem" />
+          <Skeleton width="40%" height="2rem" />
+          <Skeleton width="80%" height="0.875rem" />
+        </template>
+      </Card>
+    </section>
+
+    <!-- Real: top stat cards -->
+    <section
+      v-else
       class="relative z-10 grid gap-4 grid-cols-[repeat(auto-fit,minmax(200px,1fr))] reveal"
     >
       <Card
@@ -60,7 +80,87 @@
       </Card>
     </section>
 
-    <main class="relative z-10 grid gap-8 reveal">
+    <!-- Skeleton: main content cards -->
+    <main v-if="loading" class="relative z-10 grid gap-8 reveal">
+      <section
+        class="grid gap-6 grid-cols-[repeat(auto-fit,minmax(min(420px,100%),1fr))]"
+      >
+        <!-- Skeleton: chart cards (Model usage & Module usage) -->
+        <Card
+          v-for="n in 2"
+          :key="'chart-skel-' + n"
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)] max-h-[480px]"
+        >
+          <template #content>
+            <div class="flex flex-col gap-4">
+              <Skeleton width="50%" height="1rem" />
+              <Skeleton width="10rem" height="1.75rem" borderRadius="9999px" />
+              <Skeleton width="100%" height="2.75rem" borderRadius="1rem" />
+              <div class="flex justify-center mt-2">
+                <Skeleton width="10rem" height="10rem" shape="circle" />
+              </div>
+            </div>
+          </template>
+        </Card>
+
+        <!-- Skeleton: Case workflows -->
+        <Card
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+        >
+          <template #content>
+            <Skeleton width="55%" height="1rem" class="mb-4" />
+            <div class="flex flex-col gap-4">
+              <Skeleton
+                v-for="n in 3"
+                :key="'cw-skel-' + n"
+                width="100%"
+                height="2.75rem"
+                borderRadius="1rem"
+              />
+            </div>
+          </template>
+        </Card>
+
+        <!-- Skeleton: Audio transcriptions -->
+        <Card
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+        >
+          <template #content>
+            <Skeleton width="60%" height="1rem" class="mb-4" />
+            <div class="flex flex-col gap-4">
+              <Skeleton
+                v-for="n in 2"
+                :key="'at-skel-' + n"
+                width="100%"
+                height="2.75rem"
+                borderRadius="1rem"
+              />
+            </div>
+          </template>
+        </Card>
+
+        <!-- Skeleton: API metrics -->
+        <Card
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+        >
+          <template #content>
+            <Skeleton width="45%" height="1rem" class="mb-4" />
+            <div class="flex flex-col gap-4">
+              <Skeleton
+                v-for="n in 3"
+                :key="'api-skel-' + n"
+                width="100%"
+                height="2.75rem"
+                borderRadius="1rem"
+              />
+            </div>
+          </template>
+        </Card>
+      </section>
+    </main>
+
+    <!-- Real: main content cards -->
+    <main v-else class="relative z-10 grid gap-8 reveal">
       <section
         class="grid gap-6 grid-cols-[repeat(auto-fit,minmax(min(420px,100%),1fr))]"
       >
@@ -296,6 +396,7 @@ import Button from "primevue/button";
 import Card from "primevue/card";
 import Chart from "primevue/chart";
 import Message from "primevue/message";
+import Skeleton from "primevue/skeleton";
 import PageShell from "../components/PageShell.vue";
 
 const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
@@ -533,6 +634,7 @@ const formatDuration = (value) => {
 const fetchSummary = async () => {
   loading.value = true;
   error.value = "";
+  await new Promise((r) => setTimeout(r, 2000)); // simulate loading delay
   try {
     const res = await fetch(`${apiBase}/audit/summary`);
     if (!res.ok) {

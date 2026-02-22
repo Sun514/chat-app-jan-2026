@@ -345,6 +345,8 @@
 import { ref, reactive, onMounted, nextTick } from "vue";
 import { settings, persistSettings } from "../stores/chat.js";
 import PageShell from "../components/PageShell.vue";
+import hljs from "highlight.js";
+import "highlight.js/styles/github-dark.css";
 
 // ── State ────────────────────────────────────────────────────────────────────
 
@@ -709,11 +711,25 @@ function renderMarkdown(text) {
       // Code block
       const match = part.match(/```(\w*)\n?([\s\S]*?)```/);
       if (match) {
-        const lang = match[1]
-          ? `<span class="code-lang">${escHtml(match[1])}</span>`
+        const lang = match[1] || "";
+        const code = match[2].trim();
+
+        const langHtml = lang
+          ? `<span class="code-lang">${escHtml(lang)}</span>`
           : "";
         const copyBtn = `<button class="copy-code-btn" title="Copy code" aria-label="Copy code"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>`;
-        return `<pre class="chat-code-block">${lang}${copyBtn}<code>${escHtml(match[2].trim())}</code></pre>`;
+
+        let highlightedCode = escHtml(code);
+        if (lang && hljs.getLanguage(lang)) {
+          highlightedCode = hljs.highlight(code, {
+            language: lang,
+            ignoreIllegals: true,
+          }).value;
+        } else {
+          highlightedCode = hljs.highlightAuto(code).value;
+        }
+
+        return `<pre class="chat-code-block hljs">${langHtml}${copyBtn}<code class="hljs ${lang ? "language-" + escHtml(lang) : ""}">${highlightedCode}</code></pre>`;
       }
       return escHtml(part);
     }

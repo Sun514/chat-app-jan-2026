@@ -8,6 +8,11 @@
       {{ error }}</Message
     >
 
+    <Button
+      :label="isDark ? 'Light mode test' : 'Dark mode test'"
+      @click="isDark = !isDark"
+    ></Button>
+
     <section
       class="relative z-10 grid gap-4 grid-cols-[repeat(auto-fit,minmax(200px,1fr))] reveal"
     >
@@ -303,6 +308,7 @@ const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 const loading = ref(false);
 const error = ref("");
 const summary = ref(null);
+const isDark = ref(false);
 
 const users = computed(() => summary.value?.users || {});
 const modelRequests = computed(() => summary.value?.model_requests || {});
@@ -352,6 +358,7 @@ const buildLegendLabels = (chart) => {
   return labels.map((label, index) => {
     const numericValue = values[index] || 0;
     return {
+      fontColor: isDark.value ? "#000000" : "#FFA500",
       text: `${label} (${legendLabelWithPercent(numericValue, total)})`,
       fillStyle: backgroundColors[index] || backgroundColors[0] || "#cbd5e1",
       strokeStyle: borderColors[index] || borderColors[0] || "#ffffff",
@@ -363,7 +370,7 @@ const buildLegendLabels = (chart) => {
   });
 };
 
-const doughnutOptions = {
+const doughnutOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   cutout: "62%",
@@ -372,7 +379,7 @@ const doughnutOptions = {
       display: true,
       position: "bottom",
       labels: {
-        color: "#4b5664",
+        color: isDark.value ? "#000000" : "#FFA500",
         usePointStyle: true,
         pointStyle: "circle",
         boxWidth: 10,
@@ -402,7 +409,7 @@ const doughnutOptions = {
       },
     },
   },
-};
+}));
 
 const normalizedModelItems = computed(() => {
   const items = Array.isArray(modelRequests.value?.items)

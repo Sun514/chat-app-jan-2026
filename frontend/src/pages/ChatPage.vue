@@ -8,7 +8,7 @@
         @scroll="onScroll"
         @click="handleMessageClick"
       >
-        <div class="max-w-180 mx-auto px-6 pt-8 pb-6 flex flex-col gap-6">
+        <div class="max-w-250 mx-auto px-6 pt-8 pb-6 flex flex-col gap-6">
           <!-- Empty state -->
           <div
             v-if="messages.length === 0"
@@ -147,7 +147,7 @@
       <!-- ── Input Card ── -->
       <div class="shrink-0 px-6 pt-4 pb-5 bg-transparent">
         <div
-          class="max-w-180 mx-auto border-[1.5px] rounded-[18px] bg-white px-4 py-[0.85rem] shadow-[0_2px_12px_rgba(12,17,24,0.08)] transition-[border-color,box-shadow] duration-200"
+          class="max-w-250 mx-auto border-[1.5px] rounded-[18px] bg-white px-4 py-[0.85rem] shadow-[0_2px_12px_rgba(12,17,24,0.08)] transition-[border-color,box-shadow] duration-200"
           :class="
             inputFocused
               ? 'border-[rgba(255,106,0,0.5)] shadow-[0_0_0_3px_rgba(255,106,0,0.1),0_2px_12px_rgba(12,17,24,0.08)]'

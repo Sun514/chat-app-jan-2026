@@ -1,141 +1,206 @@
 <template>
   <PageShell footer-text="Red Pajama Labs · Audit metrics">
-    <Message v-if="error" severity="error"
-      class="relative z-10 m-0 rounded-xl border border-red-700/20 text-[#9f2d1f] bg-red-700/10 text-sm px-4 py-3 reveal">
-      {{ error }}</Message>
+    <Message
+      v-if="error"
+      severity="error"
+      class="relative z-10 m-0 rounded-xl border border-red-700/20 text-[#9f2d1f] bg-red-700/10 text-sm px-4 py-3 reveal"
+    >
+      {{ error }}</Message
+    >
 
-    <section class="relative z-10 grid gap-4 grid-cols-[repeat(auto-fit,minmax(200px,1fr))] reveal">
+    <section
+      class="relative z-10 grid gap-4 grid-cols-[repeat(auto-fit,minmax(200px,1fr))] reveal"
+    >
       <Card
-        class="relative z-10 rounded-[20px] p-5 grid gap-1 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
+        class="relative z-10 rounded-[20px] p-5 grid gap-1 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+      >
         <template #content>
-          <p class="m-0 text-sm font-bold uppercase tracking-[0.15em] text-[#4b5664]">
+          <p
+            class="m-0 text-sm font-bold uppercase tracking-[0.15em] text-[#4b5664]"
+          >
             Users total
           </p>
           <h3 class="text-3xl m-0">{{ formatInteger(users.total_users) }}</h3>
-          <p class="m-0 text-sm text-[#4b5664]">Registered accounts in the app.</p>
+          <p class="m-0 text-sm text-[#4b5664]">
+            Registered accounts in the app.
+          </p>
         </template>
       </Card>
       <Card
-        class="relative z-10 rounded-[20px] p-5 grid gap-1 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
+        class="relative z-10 rounded-[20px] p-5 grid gap-1 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+      >
         <template #content>
-          <p class="m-0 text-sm font-bold uppercase tracking-[0.15em] text-[#4b5664]">
+          <p
+            class="m-0 text-sm font-bold uppercase tracking-[0.15em] text-[#4b5664]"
+          >
             Active users (30d)
           </p>
-          <h3 class="text-3xl m-0">{{ formatInteger(users.active_users_30d) }}</h3>
-          <p class="m-0 text-sm text-[#4b5664]">Users active within the past month.</p>
+          <h3 class="text-3xl m-0">
+            {{ formatInteger(users.active_users_30d) }}
+          </h3>
+          <p class="m-0 text-sm text-[#4b5664]">
+            Users active within the past month.
+          </p>
         </template>
       </Card>
       <Card
-        class="relative z-10 rounded-[20px] p-5 grid gap-1 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
+        class="relative z-10 rounded-[20px] p-5 grid gap-1 bg-white border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+      >
         <template #content>
-          <p class="m-0 text-sm font-bold uppercase tracking-[0.15em] text-[#4b5664]">
+          <p
+            class="m-0 text-sm font-bold uppercase tracking-[0.15em] text-[#4b5664]"
+          >
             New users (7d)
           </p>
           <h3 class="text-3xl m-0">{{ formatInteger(users.new_users_7d) }}</h3>
-          <p class="m-0 text-sm text-[#4b5664]">Recent signups for the last 7 days.</p>
+          <p class="m-0 text-sm text-[#4b5664]">
+            Recent signups for the last 7 days.
+          </p>
         </template>
       </Card>
     </section>
 
     <main class="relative z-10 grid gap-8 reveal">
-      <section class="grid gap-6 grid-cols-[repeat(auto-fit,minmax(min(420px,100%),1fr))]">
+      <section
+        class="grid gap-6 grid-cols-[repeat(auto-fit,minmax(min(420px,100%),1fr))]"
+      >
         <Card
-          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)] max-h-[480px]">
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)] max-h-[480px]"
+        >
           <template #content>
-            <div class="flex items-center justify-between gap-4 flex-wrap">
+            <div class="flex flex-col gap-4">
               <div>
-                <p class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0">
+                <p
+                  class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0"
+                >
                   Model usage
                 </p>
               </div>
               <span
-                class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]">{{
+                class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] bg-orange-500/15 text-[#c84b00] self-start"
+                >{{
                   topModel
                     ? `${topModel.model} · ${formatPercent(topModel.computed_share)}`
                     : "--"
-                }}</span>
-            </div>
-            <div
-              class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
-              <span class="text-[#4b5664] text-sm">Requests</span>
-              <strong>{{ formatInteger(modelRequests.total_requests) }}</strong>
-            </div>
-            <div v-if="normalizedModelItems.length > 0" class="flex justify-center gap-5 items-start">
-              <div class="grid justify-items-center content-start gap-3">
-                <div class="w-130 h-130 max-w-full [&_canvas]:w-full! [&_canvas]:h-full!">
-                  <Chart type="doughnut" :data="modelChartData" :options="doughnutOptions" :canvasProps="{
-                    role: 'img',
-                    'aria-label': 'Model requests by model chart',
-                  }" />
+                }}</span
+              >
+              <div
+                class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+              >
+                <span class="text-[#4b5664] text-sm">Requests</span>
+                <strong>{{
+                  formatInteger(modelRequests.total_requests)
+                }}</strong>
+              </div>
+              <div
+                v-if="normalizedModelItems.length > 0"
+                class="flex justify-center gap-5 items-start"
+              >
+                <div class="grid justify-items-center content-start gap-3">
+                  <div
+                    class="w-130 h-130 max-w-full [&_canvas]:w-full! [&_canvas]:h-full!"
+                  >
+                    <Chart
+                      type="doughnut"
+                      :data="modelChartData"
+                      :options="doughnutOptions"
+                      :canvasProps="{
+                        role: 'img',
+                        'aria-label': 'Model requests by model chart',
+                      }"
+                    />
+                  </div>
                 </div>
               </div>
+              <p v-else class="text-[#4b5664] text-sm">
+                No model request data available.
+              </p>
             </div>
-            <p v-else class="text-[#4b5664] text-sm">
-              No model request data available.
-            </p>
           </template>
         </Card>
 
         <Card
-          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)] max-h-[480px]">
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)] max-h-[480px]"
+        >
           <template #content>
-            <div class="flex items-center justify-between gap-4 flex-wrap">
+            <div class="flex flex-col gap-4">
               <div>
-                <p class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0">
+                <p
+                  class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0"
+                >
                   Module usage
                 </p>
               </div>
               <span
-                class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] text-right bg-orange-500/15 text-[#c84b00]">{{
+                class="px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-[0.12em] bg-orange-500/15 text-[#c84b00] self-start"
+                >{{
                   topModule
                     ? `${topModule.module} · ${formatPercent(topModule.computed_share)}`
                     : "--"
-                }}</span>
-            </div>
-            <div
-              class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
-              <span class="text-[#4b5664] text-sm">Total visits</span>
-              <strong>{{ formatInteger(moduleTraffic.total_visits) }}</strong>
-            </div>
-            <div v-if="normalizedModuleItems.length > 0" class="flex justify-center gap-5 items-start">
-              <div class="grid justify-items-center content-start gap-3">
-                <div class="w-130 h-130 max-w-full [&_canvas]:w-full! [&_canvas]:h-full!">
-                  <Chart type="doughnut" :data="moduleChartData" :options="doughnutOptions" :canvasProps="{
-                    role: 'img',
-                    'aria-label': 'Visits by module chart',
-                  }" />
+                }}</span
+              >
+              <div
+                class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+              >
+                <span class="text-[#4b5664] text-sm">Total visits</span>
+                <strong>{{ formatInteger(moduleTraffic.total_visits) }}</strong>
+              </div>
+              <div
+                v-if="normalizedModuleItems.length > 0"
+                class="flex justify-center gap-5 items-start"
+              >
+                <div class="grid justify-items-center content-start gap-3">
+                  <div
+                    class="w-130 h-130 max-w-full [&_canvas]:w-full! [&_canvas]:h-full!"
+                  >
+                    <Chart
+                      type="doughnut"
+                      :data="moduleChartData"
+                      :options="doughnutOptions"
+                      :canvasProps="{
+                        role: 'img',
+                        'aria-label': 'Visits by module chart',
+                      }"
+                    />
+                  </div>
                 </div>
               </div>
+              <p v-else class="text-[#4b5664] text-sm">
+                No module traffic data available.
+              </p>
             </div>
-            <p v-else class="text-[#4b5664] text-sm">
-              No module traffic data available.
-            </p>
           </template>
         </Card>
 
         <Card
-          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+        >
           <template #content>
             <div class="flex items-center justify-between gap-4 flex-wrap">
               <div>
-                <p class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0">
+                <p
+                  class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0"
+                >
                   Case workflows
                 </p>
               </div>
             </div>
             <div class="flex flex-col my-4 gap-4">
               <div
-                class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
+                class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+              >
                 <span class="text-[#4b5664] text-sm">Started</span>
                 <strong>{{ formatInteger(caseWorkflows.started) }}</strong>
               </div>
               <div
-                class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
+                class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+              >
                 <span class="text-[#4b5664] text-sm">Completed</span>
                 <strong>{{ formatInteger(caseWorkflows.completed) }}</strong>
               </div>
               <div
-                class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
+                class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+              >
                 <span class="text-[#4b5664] text-sm">Completion rate</span>
                 <strong>{{
                   formatPercent(caseWorkflows.completion_rate_percent)
@@ -146,25 +211,30 @@
         </Card>
 
         <Card
-          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+        >
           <template #content>
             <div class="flex items-center justify-between gap-4 flex-wrap">
               <div>
-                <p class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0">
+                <p
+                  class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0"
+                >
                   Audio transcriptions
                 </p>
               </div>
             </div>
             <div class="flex flex-col my-4 gap-4">
               <div
-                class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
+                class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+              >
                 <span class="text-[#4b5664] text-sm">Files transcribed</span>
                 <strong>{{
                   formatInteger(audioTranscription.audio_files_transcribed)
                 }}</strong>
               </div>
               <div
-                class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
+                class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+              >
                 <span class="text-[#4b5664] text-sm">Total duration</span>
                 <strong>{{
                   formatDuration(audioTranscription.total_duration_seconds)
@@ -175,30 +245,42 @@
         </Card>
 
         <Card
-          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]">
+          class="relative z-10 flex flex-col gap-6 rounded-[28px] p-8 min-w-0 bg-white/92 border border-black/5 shadow-[0_24px_60px_rgba(11,17,25,0.18)]"
+        >
           <template #content>
             <div class="flex items-center justify-between gap-4 flex-wrap">
               <div>
-                <p class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0">
+                <p
+                  class="uppercase tracking-[0.26em] text-md font-semibold text-[#4b5664] m-0"
+                >
                   API metrics
                 </p>
               </div>
             </div>
             <div class="flex flex-col my-4 gap-4">
               <div
-                class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
+                class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+              >
                 <span class="text-[#4b5664] text-sm">API requests (24h)</span>
-                <strong>{{ formatInteger(usage.total_api_requests_24h) }}</strong>
+                <strong>{{
+                  formatInteger(usage.total_api_requests_24h)
+                }}</strong>
               </div>
               <div
-                class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
+                class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+              >
                 <span class="text-[#4b5664] text-sm">Success rate</span>
                 <strong>{{ formatPercent(usage.success_rate_percent) }}</strong>
               </div>
               <div
-                class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3">
-                <span class="text-[#4b5664] text-sm">Avg requests per user</span>
-                <strong>{{ formatDecimal(usage.avg_requests_per_user) }}</strong>
+                class="flex items-center justify-between gap-4 flex-wrap rounded-2xl border border-black/5 bg-black/2 px-4 py-3"
+              >
+                <span class="text-[#4b5664] text-sm"
+                  >Avg requests per user</span
+                >
+                <strong>{{
+                  formatDecimal(usage.avg_requests_per_user)
+                }}</strong>
               </div>
             </div>
           </template>

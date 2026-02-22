@@ -2,13 +2,21 @@
   <PageShell>
     <div class="fixed inset-0 top-22 flex flex-col bg-transparent">
       <!-- ── Messages ── -->
-      <div ref="scrollEl" class="messages-area flex-1 overflow-y-auto" @scroll="onScroll">
+      <div
+        ref="scrollEl"
+        class="messages-area flex-1 overflow-y-auto"
+        @scroll="onScroll"
+        @click="handleMessageClick"
+      >
         <div class="max-w-180 mx-auto px-6 pt-8 pb-6 flex flex-col gap-6">
           <!-- Empty state -->
-          <div v-if="messages.length === 0"
-            class="flex flex-col items-center justify-center gap-3 py-20 px-4 text-center">
+          <div
+            v-if="messages.length === 0"
+            class="flex flex-col items-center justify-center gap-3 py-20 px-4 text-center"
+          >
             <div
-              class="w-14 h-14 rounded-2xl bg-[#111722] text-white grid place-items-center text-[0.7rem] font-bold tracking-[0.2em]">
+              class="w-14 h-14 rounded-2xl bg-[#111722] text-white grid place-items-center text-[0.7rem] font-bold tracking-[0.2em]"
+            >
               RPL
             </div>
             <h2 class="m-0 text-[1.6rem] font-semibold text-(--ink)">
@@ -24,8 +32,11 @@
             <!-- User bubble -->
             <div v-if="msg.role === 'user'" class="flex gap-3 justify-end">
               <div
-                class="max-w-[78%] bg-[rgba(255,106,0,0.09)] border border-[rgba(255,106,0,0.2)] rounded-[20px] rounded-br-md px-4 py-3">
-                <p class="m-0 text-[0.9rem] leading-relaxed whitespace-pre-wrap wrap-break-word">
+                class="max-w-[78%] bg-[rgba(255,106,0,0.09)] border border-[rgba(255,106,0,0.2)] rounded-[20px] rounded-br-md px-4 py-3"
+              >
+                <p
+                  class="m-0 text-[0.9rem] leading-relaxed whitespace-pre-wrap wrap-break-word"
+                >
                   {{ msg.content }}
                 </p>
               </div>
@@ -34,47 +45,70 @@
             <!-- Assistant message -->
             <div v-else class="flex gap-3 items-start">
               <div
-                class="shrink-0 w-8 h-8 rounded-[10px] bg-[#111722] text-white grid place-items-center text-[0.65rem] font-bold tracking-[0.05em] mt-0.5">
+                class="shrink-0 w-8 h-8 rounded-[10px] bg-[#111722] text-white grid place-items-center text-[0.65rem] font-bold tracking-[0.05em] mt-0.5"
+              >
                 AI
               </div>
               <div class="flex-1 min-w-0">
                 <!-- Thinking block -->
-                <div v-if="msg.thinking || msg.streamingThinking"
-                  class="mb-3 border border-[rgba(12,17,24,0.1)] rounded-xl overflow-hidden">
+                <div
+                  v-if="msg.thinking || msg.streamingThinking"
+                  class="mb-3 border border-[rgba(12,17,24,0.1)] rounded-xl overflow-hidden"
+                >
                   <button
                     class="w-full flex items-center gap-2 px-3.5 py-[0.55rem] bg-[rgba(12,17,24,0.04)] border-none cursor-pointer text-[0.78rem] font-medium font-[inherit] text-(--muted) text-left transition-colors duration-150 hover:bg-[rgba(12,17,24,0.07)]"
-                    @click="msg.thinkingExpanded = !msg.thinkingExpanded">
-                    <span class="w-1.75 h-1.75 rounded-full bg-(--teal) shrink-0 transition-colors duration-300"
-                      :class="{ 'think-dot-pulsing': msg.streamingThinking }"></span>
+                    @click="msg.thinkingExpanded = !msg.thinkingExpanded"
+                  >
+                    <span
+                      class="w-1.75 h-1.75 rounded-full bg-(--teal) shrink-0 transition-colors duration-300"
+                      :class="{ 'think-dot-pulsing': msg.streamingThinking }"
+                    ></span>
                     <span class="flex-1">{{
                       msg.streamingThinking
                         ? "Thinking…"
                         : "Thought for a moment"
                     }}</span>
-                    <svg class="transition-transform duration-200 text-(--muted)"
-                      :class="{ 'rotate-180': msg.thinkingExpanded }" xmlns="http://www.w3.org/2000/svg" width="12"
-                      height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                      stroke-linecap="round" stroke-linejoin="round">
+                    <svg
+                      class="transition-transform duration-200 text-(--muted)"
+                      :class="{ 'rotate-180': msg.thinkingExpanded }"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
                       <polyline points="6 9 12 15 18 9" />
                     </svg>
                   </button>
                   <Transition name="think-expand">
-                    <div v-if="msg.thinkingExpanded"
-                      class="think-content border-t border-[rgba(12,17,24,0.07)] bg-[rgba(12,17,24,0.02)] overflow-y-auto">
+                    <div
+                      v-if="msg.thinkingExpanded"
+                      class="think-content border-t border-[rgba(12,17,24,0.07)] bg-[rgba(12,17,24,0.02)] overflow-y-auto"
+                    >
                       <pre
-                        class="m-0 px-3.5 py-3 text-[0.75rem] font-mono text-(--muted) whitespace-pre-wrap wrap-break-word leading-[1.65]">{{ msg.thinking }}</pre>
+                        class="m-0 px-3.5 py-3 text-[0.75rem] font-mono text-(--muted) whitespace-pre-wrap wrap-break-word leading-[1.65]"
+                        >{{ msg.thinking }}</pre
+                      >
                     </div>
                   </Transition>
                 </div>
 
                 <!-- Response content -->
-                <div v-if="msg.content"
+                <div
+                  v-if="msg.content"
                   class="response-content text-[0.9rem] leading-[1.7] text-(--ink) wrap-break-word"
-                  v-html="renderMarkdown(msg.content)"></div>
+                  v-html="renderMarkdown(msg.content)"
+                ></div>
 
                 <!-- Streaming dots (before first content) -->
-                <div v-if="msg.streaming && !msg.content && !msg.streamingThinking"
-                  class="flex gap-1 items-center py-[0.3rem]">
+                <div
+                  v-if="msg.streaming && !msg.content && !msg.streamingThinking"
+                  class="flex gap-1 items-center py-[0.3rem]"
+                >
                   <span class="typing-dot"></span>
                   <span class="typing-dot [animation-delay:0.2s]"></span>
                   <span class="typing-dot [animation-delay:0.4s]"></span>
@@ -84,10 +118,21 @@
           </template>
 
           <!-- Stream error -->
-          <div v-if="streamError"
-            class="flex items-center gap-2 text-[0.82rem] text-red-600 bg-[rgba(220,38,38,0.07)] border border-[rgba(220,38,38,0.2)] rounded-[10px] px-3.5 py-[0.6rem]">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <div
+            v-if="streamError"
+            class="flex items-center gap-2 text-[0.82rem] text-red-600 bg-[rgba(220,38,38,0.07)] border border-[rgba(220,38,38,0.2)] rounded-[10px] px-3.5 py-[0.6rem]"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
               <circle cx="12" cy="12" r="10" />
               <line x1="12" y1="8" x2="12" y2="12" />
               <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -103,31 +148,50 @@
       <div class="shrink-0 px-6 pt-4 pb-5 bg-transparent">
         <div
           class="max-w-180 mx-auto border-[1.5px] rounded-[18px] bg-white px-4 py-[0.85rem] shadow-[0_2px_12px_rgba(12,17,24,0.08)] transition-[border-color,box-shadow] duration-200"
-          :class="inputFocused
-            ? 'border-[rgba(255,106,0,0.5)] shadow-[0_0_0_3px_rgba(255,106,0,0.1),0_2px_12px_rgba(12,17,24,0.08)]'
-            : 'border-[rgba(12,17,24,0.15)]'
-            ">
+          :class="
+            inputFocused
+              ? 'border-[rgba(255,106,0,0.5)] shadow-[0_0_0_3px_rgba(255,106,0,0.1),0_2px_12px_rgba(12,17,24,0.08)]'
+              : 'border-[rgba(12,17,24,0.15)]'
+          "
+        >
           <!-- Settings panel (inside card) -->
           <Transition name="slide-up">
-            <div v-if="settingsOpen" class="pb-3 mb-2 border-b border-[rgba(12,17,24,0.08)]">
+            <div
+              v-if="settingsOpen"
+              class="pb-3 mb-2 border-b border-[rgba(12,17,24,0.08)]"
+            >
               <div class="flex flex-col gap-[0.4rem]">
-                <label class="text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-(--muted)">Ollama
-                  Endpoint</label>
+                <label
+                  class="text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-(--muted)"
+                  >Ollama Endpoint</label
+                >
                 <div class="flex gap-2">
-                  <input v-model="endpointDraft" type="url" placeholder="http://localhost:11434"
+                  <input
+                    v-model="endpointDraft"
+                    type="url"
+                    placeholder="http://localhost:11434"
                     class="flex-1 border border-[rgba(12,17,24,0.15)] rounded-[10px] px-3 py-[0.45rem] text-[0.85rem] text-(--ink) bg-[rgba(255,255,255,0.8)] outline-none transition-[border-color,box-shadow] duration-150 focus:border-(--accent) focus:shadow-[0_0_0_3px_rgba(255,106,0,0.12)]"
-                    @keydown.enter="applyEndpoint" />
+                    @keydown.enter="applyEndpoint"
+                  />
                   <button
                     class="px-4 py-[0.45rem] rounded-[10px] border-none bg-(--ink) text-white text-[0.82rem] font-semibold cursor-pointer transition-colors duration-150 whitespace-nowrap hover:bg-[#1d2a3a] disabled:opacity-50 disabled:cursor-default"
-                    @click="applyEndpoint" :disabled="modelsLoading">
+                    @click="applyEndpoint"
+                    :disabled="modelsLoading"
+                  >
                     {{ modelsLoading ? "Connecting…" : "Connect" }}
                   </button>
                 </div>
               </div>
-              <p v-if="modelsError" class="mt-2 m-0 text-[0.78rem] text-red-600">
+              <p
+                v-if="modelsError"
+                class="mt-2 m-0 text-[0.78rem] text-red-600"
+              >
                 {{ modelsError }}
               </p>
-              <p v-else-if="models.length > 0" class="mt-2 m-0 text-[0.78rem] text-green-700">
+              <p
+                v-else-if="models.length > 0"
+                class="mt-2 m-0 text-[0.78rem] text-green-700"
+              >
                 Connected · {{ models.length }} model{{
                   models.length === 1 ? "" : "s"
                 }}
@@ -137,19 +201,40 @@
           </Transition>
 
           <!-- Input textarea -->
-          <textarea ref="inputEl" v-model="input" placeholder="Message…" rows="1"
+          <textarea
+            ref="inputEl"
+            v-model="input"
+            placeholder="Message…"
+            rows="1"
             class="w-full resize-none bg-transparent border-none outline-none text-[0.9rem] text-(--ink) leading-relaxed max-h-50 overflow-y-auto placeholder:text-(--muted) disabled:opacity-60"
-            :disabled="isStreaming" @keydown.enter.exact.prevent="send" @input="autoResize" @focus="inputFocused = true"
-            @blur="inputFocused = false"></textarea>
+            :disabled="isStreaming"
+            @keydown.enter.exact.prevent="send"
+            @input="autoResize"
+            @focus="inputFocused = true"
+            @blur="inputFocused = false"
+          ></textarea>
 
           <!-- Bottom toolbar -->
-          <div class="flex items-center justify-between pt-2 mt-2 border-t border-[rgba(12,17,24,0.08)]">
+          <div
+            class="flex items-center justify-between pt-2 mt-2 border-t border-[rgba(12,17,24,0.08)]"
+          >
             <div class="flex items-center gap-2">
               <button
                 class="flex items-center justify-center w-8 h-8 rounded-lg border-none bg-transparent text-(--muted) cursor-pointer transition-colors duration-150 hover:bg-[rgba(12,17,24,0.07)] hover:text-(--ink)"
-                @click="clearChat" title="New conversation">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                @click="clearChat"
+                title="New conversation"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
                   <line x1="12" y1="5" x2="12" y2="19" />
                   <line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
@@ -161,18 +246,35 @@
                 class="flex items-center justify-center w-8 h-8 rounded-lg border-none bg-transparent text-(--muted) cursor-pointer transition-colors duration-150 hover:bg-[rgba(12,17,24,0.07)] hover:text-(--ink)"
                 :class="{
                   'bg-[rgba(12,17,24,0.07)] text-(--ink)!': settingsOpen,
-                }" @click="settingsOpen = !settingsOpen" title="Settings">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                }"
+                @click="settingsOpen = !settingsOpen"
+                title="Settings"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
                   <circle cx="12" cy="12" r="3" />
                   <path
-                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+                  />
                 </svg>
               </button>
               <div class="relative flex items-center">
-                <select v-model="activeModel"
+                <select
+                  v-model="activeModel"
                   class="appearance-none bg-[rgba(12,17,24,0.05)] border-none rounded-lg py-[0.35rem] pl-[0.65rem] pr-7 text-[0.78rem] font-medium text-(--ink) cursor-pointer outline-none transition-colors duration-150 hover:bg-[rgba(12,17,24,0.08)] focus:bg-[rgba(12,17,24,0.1)] disabled:opacity-50 disabled:cursor-default"
-                  :disabled="modelsLoading" @change="onModelChange" title="Select model">
+                  :disabled="modelsLoading"
+                  @change="onModelChange"
+                  title="Select model"
+                >
                   <option v-if="models.length === 0" value="">
                     {{ modelsLoading ? "Loading…" : "No models" }}
                   </option>
@@ -180,9 +282,18 @@
                     {{ m.id }}
                   </option>
                 </select>
-                <svg class="absolute right-2 text-(--muted) pointer-events-none" xmlns="http://www.w3.org/2000/svg"
-                  width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                  stroke-linecap="round" stroke-linejoin="round">
+                <svg
+                  class="absolute right-2 text-(--muted) pointer-events-none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
                   <polyline points="6 9 12 15 18 9" />
                 </svg>
               </div>
@@ -191,14 +302,33 @@
                 :class="{
                   'bg-[#C96040] text-white!': !isStreaming && input.trim(),
                   'bg-red-600 text-white!': isStreaming,
-                }" @click="isStreaming ? stopStream() : send()" :disabled="!input.trim() && !isStreaming"
-                :title="isStreaming ? 'Stop' : 'Send'">
-                <svg v-if="isStreaming" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
-                  fill="currentColor">
+                }"
+                @click="isStreaming ? stopStream() : send()"
+                :disabled="!input.trim() && !isStreaming"
+                :title="isStreaming ? 'Stop' : 'Send'"
+              >
+                <svg
+                  v-if="isStreaming"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
                   <rect x="4" y="4" width="16" height="16" rx="2" />
                 </svg>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg
+                  v-else
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
                   <line x1="12" y1="19" x2="12" y2="5" />
                   <polyline points="5 12 12 5 19 12" />
                 </svg>
@@ -531,6 +661,25 @@ function scrollToBottom(smooth = false) {
   });
 }
 
+function handleMessageClick(e) {
+  const btn = e.target.closest(".copy-code-btn");
+  if (btn) {
+    const codeNode = btn.parentElement.querySelector("code");
+    if (codeNode) {
+      navigator.clipboard
+        .writeText(codeNode.textContent)
+        .then(() => {
+          const originalHtml = btn.innerHTML;
+          btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+          setTimeout(() => {
+            if (btn.parentElement) btn.innerHTML = originalHtml;
+          }, 2000);
+        })
+        .catch((err) => console.error("Failed to copy text: ", err));
+    }
+  }
+}
+
 function autoResize() {
   const el = inputEl.value;
   if (!el) return;
@@ -563,7 +712,8 @@ function renderMarkdown(text) {
         const lang = match[1]
           ? `<span class="code-lang">${escHtml(match[1])}</span>`
           : "";
-        return `<pre class="chat-code-block">${lang}<code>${escHtml(match[2].trim())}</code></pre>`;
+        const copyBtn = `<button class="copy-code-btn" title="Copy code" aria-label="Copy code"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>`;
+        return `<pre class="chat-code-block">${lang}${copyBtn}<code>${escHtml(match[2].trim())}</code></pre>`;
       }
       return escHtml(part);
     }
@@ -637,7 +787,6 @@ onMounted(() => {
 }
 
 @keyframes think-pulse {
-
   0%,
   100% {
     opacity: 1;
@@ -659,7 +808,6 @@ onMounted(() => {
 }
 
 @keyframes bounce {
-
   0%,
   80%,
   100% {
@@ -746,6 +894,37 @@ onMounted(() => {
   background: #1a2030;
   border-radius: 10px;
   overflow: hidden;
+  position: relative;
+}
+
+.response-content :deep(.copy-code-btn) {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 0.2s,
+    background 0.2s,
+    color 0.2s;
+}
+
+.response-content :deep(.chat-code-block:hover .copy-code-btn) {
+  opacity: 1;
+}
+
+.response-content :deep(.copy-code-btn:hover) {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
 }
 
 .response-content :deep(.code-lang) {

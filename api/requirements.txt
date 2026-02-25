@@ -35,7 +35,7 @@ passlib[bcrypt]>=1.7.4
 python-multipart>=0.0.6
 
 # Audio/Media Processing
-pydub>=0.25.1
+ffmpeg-python>=0.2.0
 
 # Utilities
 python-dotenv>=1.0.0

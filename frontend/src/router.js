@@ -4,6 +4,7 @@ import InvestigationPage from "./pages/InvestigationPageDetails.vue";
 import DocumentCollectionsPage from "./pages/DocumentCollectionsPage.vue";
 import AuditMetricsPage from "./pages/AuditMetricsPage.vue";
 import ChatPage from "./pages/ChatPage.vue";
+import MediaSplitterPage from "./pages/MediaSplitterPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -47,6 +48,14 @@ const router = createRouter({
       meta: {
         headerTitle: "Audit metrics",
         headerSubtitle: "Operational analytics and usage trends.",
+      },
+    },
+    {
+      path: "/media",
+      component: MediaSplitterPage,
+      meta: {
+        headerTitle: "Media splitter",
+        headerSubtitle: "Split audio and video files into smaller parts.",
       },
     },
   ],

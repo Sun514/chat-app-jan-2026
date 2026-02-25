@@ -60,6 +60,11 @@ const navItems = computed(() => {
       class: isActive("/audit") ? "menu-item-active" : "",
     },
     {
+      label: "Media splitter",
+      command: () => router.push("/media"),
+      class: isActive("/media") ? "menu-item-active" : "",
+    },
+    {
       label: "Chat",
       command: () => router.push("/chat"),
       class: isActive("/chat") ? "menu-item-active" : "",

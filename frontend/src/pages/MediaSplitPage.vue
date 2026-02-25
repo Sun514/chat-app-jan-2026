@@ -83,13 +83,13 @@
                 </div>
                 <InputNumber 
                   v-model="chunkDuration" 
-                  :min="10" 
-                  :max="3600" 
+                  :min="1" 
+                  :max="60" 
                   :disabled="splitMode !== 'duration'"
                   showButtons 
                   fluid 
                 />
-                <span class="text-[#4b5664] text-xs">Seconds (default: 300)</span>
+                <span class="text-[#4b5664] text-xs">Minutes (default: 5)</span>
               </div>
 
               <div class="flex-1 flex flex-col gap-2">
@@ -186,7 +186,7 @@
               <span class="text-xs uppercase tracking-[0.18em] text-[#4b5664]">Estimated chunks</span>
               <p class="font-semibold mt-1">
                 {{ splitMode === 'duration' 
-                  ? Math.ceil(mediaInfo.duration_seconds / chunkDuration) 
+                  ? Math.ceil(mediaInfo.duration_seconds / (chunkDuration * 60)) 
                   : Math.ceil(mediaInfo.file_size_mb / chunkSizeMb) }}
               </p>
             </div>
@@ -217,7 +217,7 @@ const originalFilename = ref("");
 const splitting = ref(false);
 const error = ref("");
 const mediaInfo = ref(null);
-const chunkDuration = ref(300);
+const chunkDuration = ref(5);
 const chunkSizeMb = ref(100);
 const splitMode = ref("duration");
 const dragOver = ref(false);
@@ -298,7 +298,7 @@ const splitFile = async () => {
     formData.append("file", file.value);
 
     if (splitMode.value === "duration") {
-      formData.append("chunk_duration", chunkDuration.value);
+      formData.append("chunk_duration", chunkDuration.value * 60);
     } else {
       formData.append("chunk_size_mb", chunkSizeMb.value);
     }

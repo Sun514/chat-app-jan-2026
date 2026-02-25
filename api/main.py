@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from api.config import settings
 from api.core.database import init_pool, close_pool
-from api.routers import general, documents, audit
+from api.routers import general, documents, audit, media
 
 logging.basicConfig(
     level=getattr(logging, settings.log_level),
@@ -49,6 +49,7 @@ app.add_middleware(
 app.include_router(general.router)
 app.include_router(documents.router)
 app.include_router(audit.router)
+app.include_router(media.router)
 
 
 if __name__ == "__main__":

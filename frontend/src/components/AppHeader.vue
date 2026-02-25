@@ -64,6 +64,11 @@ const navItems = computed(() => {
       command: () => router.push("/chat"),
       class: isActive("/chat") ? "menu-item-active" : "",
     },
+    {
+      label: "Media Splitter",
+      command: () => router.push("/media"),
+      class: isActive("/media") ? "menu-item-active" : "",
+    },
   ];
 });
 </script>

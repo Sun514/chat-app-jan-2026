@@ -131,7 +131,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import PageShell from "../components/PageShell.vue";
 import FileUpload from "primevue/fileupload";
 import SelectButton from "primevue/selectbutton";
@@ -151,11 +151,15 @@ const splitOptions = [
 
 const selectedFile = ref(null);
 const splitBy = ref("duration");
-const splitValue = ref(5);
+const splitValue = ref(240);
 const splitting = ref(false);
 const error = ref("");
 const result = ref(null);
 const uploadKey = ref(0);
+
+watch(splitBy, (mode) => {
+  splitValue.value = mode === "duration" ? 240 : 2000;
+});
 
 function onFileSelect(event) {
   const files = event.files || [];
@@ -211,7 +215,7 @@ function reset() {
   selectedFile.value = null;
   result.value = null;
   error.value = "";
-  splitValue.value = splitBy.value === "duration" ? 5 : 10;
+  splitValue.value = splitBy.value === "duration" ? 240 : 2000;
   uploadKey.value++;
 }
 

@@ -1,13 +1,13 @@
 <template>
-  <PageShell footer-text="Red Pajama Labs · Media splitter">
+  <PageShell footer-text="Red Pajama Labs · Media tools">
     <div class="reveal mx-auto w-full max-w-3xl flex flex-col gap-8">
       <!-- Upload & Split Card -->
       <div
         class="rounded-3xl border border-black/10 bg-white/90 backdrop-blur-md shadow-[0_24px_60px_rgba(11,17,25,0.12)] p-8">
-        <h2 class="text-xl font-semibold mb-1">Split media file</h2>
+        <h2 class="text-xl font-semibold mb-1">Split media or extract audio</h2>
         <p class="text-sm text-[#4b5664] mb-6">
-          Upload an audio or video file and split it into smaller parts by
-          duration or file size.
+          Upload an audio or video file to split it into smaller parts by duration
+          or file size, or extract audio to your preferred format.
         </p>
 
         <!-- File upload -->

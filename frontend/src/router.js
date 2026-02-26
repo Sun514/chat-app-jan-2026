@@ -54,8 +54,8 @@ const router = createRouter({
       path: "/media",
       component: MediaSplitterPage,
       meta: {
-        headerTitle: "Media splitter",
-        headerSubtitle: "Split audio and video files into smaller parts.",
+        headerTitle: "Media Tools",
+        headerSubtitle: "Split media or extract audio.",
       },
     },
   ],

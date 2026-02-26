@@ -3,8 +3,7 @@
     <div class="reveal mx-auto w-full max-w-3xl flex flex-col gap-8">
       <!-- Upload & Split Card -->
       <div
-        class="rounded-3xl border border-black/10 bg-white/90 backdrop-blur-md shadow-[0_24px_60px_rgba(11,17,25,0.12)] p-8"
-      >
+        class="rounded-3xl border border-black/10 bg-white/90 backdrop-blur-md shadow-[0_24px_60px_rgba(11,17,25,0.12)] p-8">
         <h2 class="text-xl font-semibold mb-1">Split media file</h2>
         <p class="text-sm text-[#4b5664] mb-6">
           Upload an audio or video file and split it into smaller parts by
@@ -14,16 +13,8 @@
         <!-- File upload -->
         <div class="mb-5">
           <label class="block text-sm font-medium mb-2">File</label>
-          <FileUpload
-            :key="uploadKey"
-            mode="basic"
-            name="file"
-            :auto="false"
-            :customUpload="true"
-            chooseLabel="Choose file"
-            :accept="acceptedTypes"
-            @select="onFileSelect"
-          />
+          <FileUpload :key="uploadKey" mode="basic" name="file" :auto="false" :customUpload="true"
+            chooseLabel="Choose file" :accept="acceptedTypes" @select="onFileSelect" />
           <p v-if="selectedFile" class="mt-2 text-sm text-[#4b5664]">
             {{ selectedFile.name }}
             <span class="text-xs">({{ formatBytes(selectedFile.size) }})</span>
@@ -33,12 +24,8 @@
         <!-- Mode: Split or Extract Audio -->
         <div class="mb-5">
           <label class="block text-sm font-medium mb-2">Action</label>
-          <SelectButton
-            v-model="actionMode"
-            :options="actionOptions"
-            optionLabel="label"
-            optionValue="value"
-          />
+          <SelectButton v-model="actionMode" :options="actionOptions" optionLabel="label" optionValue="value"
+            :allowEmpty="false" />
         </div>
 
         <!-- Split options (only when splitting) -->
@@ -46,12 +33,8 @@
           <!-- Split mode -->
           <div class="mb-5">
             <label class="block text-sm font-medium mb-2">Split by</label>
-            <SelectButton
-              v-model="splitBy"
-              :options="splitOptions"
-              optionLabel="label"
-              optionValue="value"
-            />
+            <SelectButton v-model="splitBy" :options="splitOptions" optionLabel="label" optionValue="value"
+              :allowEmpty="false" />
           </div>
 
           <!-- Value input -->
@@ -59,14 +42,8 @@
             <label class="block text-sm font-medium mb-2">
               {{ splitBy === "duration" ? "Segment length (minutes)" : "Target size per part (MB)" }}
             </label>
-            <InputNumber
-              v-model="splitValue"
-              :min="0.1"
-              :step="splitBy === 'duration' ? 1 : 5"
-              :minFractionDigits="1"
-              :maxFractionDigits="1"
-              class="w-full"
-            />
+            <InputNumber v-model="splitValue" :min="0.1" :step="splitBy === 'duration' ? 1 : 5" :minFractionDigits="1"
+              :maxFractionDigits="1" class="w-full" />
           </div>
         </template>
 
@@ -74,23 +51,16 @@
         <template v-if="actionMode === 'extract-audio'">
           <div class="mb-6">
             <label class="block text-sm font-medium mb-2">Output format</label>
-            <SelectButton
-              v-model="audioFormat"
-              :options="audioFormatOptions"
-              optionLabel="label"
-              optionValue="value"
-            />
+            <SelectButton v-model="audioFormat" :options="audioFormatOptions" optionLabel="label" optionValue="value"
+              :allowEmpty="false" />
           </div>
         </template>
 
         <!-- Submit -->
         <Button
           :label="splitting ? (actionMode === 'split' ? 'Splitting...' : 'Extracting...') : (actionMode === 'split' ? 'Split file' : 'Extract audio')"
-          :loading="splitting"
-          :disabled="!selectedFile || splitting"
-          @click="actionMode === 'split' ? splitFile() : extractAudio()"
-          class="w-full"
-        />
+          :loading="splitting" :disabled="!selectedFile || splitting"
+          @click="actionMode === 'split' ? splitFile() : extractAudio()" class="w-full" />
 
         <!-- Error -->
         <Message v-if="error" severity="error" class="mt-4" :closable="false">
@@ -99,10 +69,8 @@
       </div>
 
       <!-- Split Results Card -->
-      <div
-        v-if="result && result.parts"
-        class="reveal rounded-3xl border border-black/10 bg-white/90 backdrop-blur-md shadow-[0_24px_60px_rgba(11,17,25,0.12)] p-8"
-      >
+      <div v-if="result && result.parts"
+        class="reveal rounded-3xl border border-black/10 bg-white/90 backdrop-blur-md shadow-[0_24px_60px_rgba(11,17,25,0.12)] p-8">
         <h2 class="text-xl font-semibold mb-1">Split complete</h2>
         <p class="text-sm text-[#4b5664] mb-5">
           {{ result.original_filename }} split into
@@ -113,11 +81,8 @@
         </p>
 
         <div class="flex flex-col gap-2">
-          <div
-            v-for="part in result.parts"
-            :key="part.filename"
-            class="flex items-center justify-between gap-4 rounded-xl border border-black/8 bg-white/70 px-5 py-3"
-          >
+          <div v-for="part in result.parts" :key="part.filename"
+            class="flex items-center justify-between gap-4 rounded-xl border border-black/8 bg-white/70 px-5 py-3">
             <div class="min-w-0">
               <p class="text-sm font-medium truncate">{{ part.filename }}</p>
               <p class="text-xs text-[#4b5664]">
@@ -127,11 +92,7 @@
                 </span>
               </p>
             </div>
-            <a
-              :href="downloadUrl(part.download_url)"
-              download
-              class="shrink-0"
-            >
+            <a :href="downloadUrl(part.download_url)" download class="shrink-0">
               <Button label="Download" size="small" outlined />
             </a>
           </div>
@@ -139,34 +100,20 @@
 
         <!-- Download all -->
         <div class="mt-4 flex gap-3">
-          <Button
-            label="Download all (.zip)"
-            size="small"
-            severity="secondary"
-            @click="downloadAllZip"
-          />
-          <Button
-            label="Split another file"
-            size="small"
-            outlined
-            @click="reset"
-          />
+          <Button label="Download all (.zip)" size="small" severity="secondary" @click="downloadAllZip" />
+          <Button label="Split another file" size="small" outlined @click="reset" />
         </div>
       </div>
 
       <!-- Extract Audio Result Card -->
-      <div
-        v-if="result && result.download_url && !result.parts"
-        class="reveal rounded-3xl border border-black/10 bg-white/90 backdrop-blur-md shadow-[0_24px_60px_rgba(11,17,25,0.12)] p-8"
-      >
+      <div v-if="result && result.download_url && !result.parts"
+        class="reveal rounded-3xl border border-black/10 bg-white/90 backdrop-blur-md shadow-[0_24px_60px_rgba(11,17,25,0.12)] p-8">
         <h2 class="text-xl font-semibold mb-1">Audio extracted</h2>
         <p class="text-sm text-[#4b5664] mb-5">
           Extracted audio from {{ result.original_filename }}
         </p>
 
-        <div
-          class="flex items-center justify-between gap-4 rounded-xl border border-black/8 bg-white/70 px-5 py-3"
-        >
+        <div class="flex items-center justify-between gap-4 rounded-xl border border-black/8 bg-white/70 px-5 py-3">
           <div class="min-w-0">
             <p class="text-sm font-medium truncate">{{ result.filename }}</p>
             <p class="text-xs text-[#4b5664]">
@@ -176,22 +123,13 @@
               </span>
             </p>
           </div>
-          <a
-            :href="downloadUrl(result.download_url)"
-            download
-            class="shrink-0"
-          >
+          <a :href="downloadUrl(result.download_url)" download class="shrink-0">
             <Button label="Download" size="small" outlined />
           </a>
         </div>
 
         <div class="mt-4">
-          <Button
-            label="Extract another file"
-            size="small"
-            outlined
-            @click="reset"
-          />
+          <Button label="Extract another file" size="small" outlined @click="reset" />
         </div>
       </div>
     </div>
@@ -226,7 +164,6 @@ const audioFormatOptions = [
   { label: "MP3", value: "mp3" },
   { label: "WAV", value: "wav" },
   { label: "FLAC", value: "flac" },
-  { label: "AAC", value: "aac" },
 ];
 
 const actionMode = ref("split");

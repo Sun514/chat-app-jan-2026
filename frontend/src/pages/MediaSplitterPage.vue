@@ -30,38 +30,65 @@
           </p>
         </div>
 
-        <!-- Split mode -->
+        <!-- Mode: Split or Extract Audio -->
         <div class="mb-5">
-          <label class="block text-sm font-medium mb-2">Split by</label>
+          <label class="block text-sm font-medium mb-2">Action</label>
           <SelectButton
-            v-model="splitBy"
-            :options="splitOptions"
+            v-model="actionMode"
+            :options="actionOptions"
             optionLabel="label"
             optionValue="value"
           />
         </div>
 
-        <!-- Value input -->
-        <div class="mb-6">
-          <label class="block text-sm font-medium mb-2">
-            {{ splitBy === "duration" ? "Segment length (minutes)" : "Target size per part (MB)" }}
-          </label>
-          <InputNumber
-            v-model="splitValue"
-            :min="0.1"
-            :step="splitBy === 'duration' ? 1 : 5"
-            :minFractionDigits="1"
-            :maxFractionDigits="1"
-            class="w-full"
-          />
-        </div>
+        <!-- Split options (only when splitting) -->
+        <template v-if="actionMode === 'split'">
+          <!-- Split mode -->
+          <div class="mb-5">
+            <label class="block text-sm font-medium mb-2">Split by</label>
+            <SelectButton
+              v-model="splitBy"
+              :options="splitOptions"
+              optionLabel="label"
+              optionValue="value"
+            />
+          </div>
+
+          <!-- Value input -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium mb-2">
+              {{ splitBy === "duration" ? "Segment length (minutes)" : "Target size per part (MB)" }}
+            </label>
+            <InputNumber
+              v-model="splitValue"
+              :min="0.1"
+              :step="splitBy === 'duration' ? 1 : 5"
+              :minFractionDigits="1"
+              :maxFractionDigits="1"
+              class="w-full"
+            />
+          </div>
+        </template>
+
+        <!-- Extract audio options -->
+        <template v-if="actionMode === 'extract-audio'">
+          <div class="mb-6">
+            <label class="block text-sm font-medium mb-2">Output format</label>
+            <SelectButton
+              v-model="audioFormat"
+              :options="audioFormatOptions"
+              optionLabel="label"
+              optionValue="value"
+            />
+          </div>
+        </template>
 
         <!-- Submit -->
         <Button
-          :label="splitting ? 'Splitting...' : 'Split file'"
+          :label="splitting ? (actionMode === 'split' ? 'Splitting...' : 'Extracting...') : (actionMode === 'split' ? 'Split file' : 'Extract audio')"
           :loading="splitting"
           :disabled="!selectedFile || splitting"
-          @click="splitFile"
+          @click="actionMode === 'split' ? splitFile() : extractAudio()"
           class="w-full"
         />
 
@@ -71,9 +98,9 @@
         </Message>
       </div>
 
-      <!-- Results Card -->
+      <!-- Split Results Card -->
       <div
-        v-if="result"
+        v-if="result && result.parts"
         class="reveal rounded-3xl border border-black/10 bg-white/90 backdrop-blur-md shadow-[0_24px_60px_rgba(11,17,25,0.12)] p-8"
       >
         <h2 class="text-xl font-semibold mb-1">Split complete</h2>
@@ -126,6 +153,47 @@
           />
         </div>
       </div>
+
+      <!-- Extract Audio Result Card -->
+      <div
+        v-if="result && result.download_url && !result.parts"
+        class="reveal rounded-3xl border border-black/10 bg-white/90 backdrop-blur-md shadow-[0_24px_60px_rgba(11,17,25,0.12)] p-8"
+      >
+        <h2 class="text-xl font-semibold mb-1">Audio extracted</h2>
+        <p class="text-sm text-[#4b5664] mb-5">
+          Extracted audio from {{ result.original_filename }}
+        </p>
+
+        <div
+          class="flex items-center justify-between gap-4 rounded-xl border border-black/8 bg-white/70 px-5 py-3"
+        >
+          <div class="min-w-0">
+            <p class="text-sm font-medium truncate">{{ result.filename }}</p>
+            <p class="text-xs text-[#4b5664]">
+              {{ formatBytes(result.size_bytes) }}
+              <span v-if="result.duration_seconds">
+                &middot; {{ formatDuration(result.duration_seconds) }}
+              </span>
+            </p>
+          </div>
+          <a
+            :href="downloadUrl(result.download_url)"
+            download
+            class="shrink-0"
+          >
+            <Button label="Download" size="small" outlined />
+          </a>
+        </div>
+
+        <div class="mt-4">
+          <Button
+            label="Extract another file"
+            size="small"
+            outlined
+            @click="reset"
+          />
+        </div>
+      </div>
     </div>
   </PageShell>
 </template>
@@ -144,14 +212,28 @@ const apiBase = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 const acceptedTypes =
   ".mp3,.wav,.ogg,.flac,.m4a,.aac,.wma,.mp4,.mkv,.avi,.mov,.webm";
 
+const actionOptions = [
+  { label: "Split", value: "split" },
+  { label: "Extract audio", value: "extract-audio" },
+];
+
 const splitOptions = [
   { label: "Duration", value: "duration" },
   { label: "File size", value: "size" },
 ];
 
+const audioFormatOptions = [
+  { label: "MP3", value: "mp3" },
+  { label: "WAV", value: "wav" },
+  { label: "FLAC", value: "flac" },
+  { label: "AAC", value: "aac" },
+];
+
+const actionMode = ref("split");
 const selectedFile = ref(null);
 const splitBy = ref("duration");
 const splitValue = ref(240);
+const audioFormat = ref("mp3");
 const splitting = ref(false);
 const error = ref("");
 const result = ref(null);
@@ -180,6 +262,36 @@ async function splitFile() {
 
   try {
     const res = await fetch(`${apiBase}/media/split`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => null);
+      throw new Error(body?.detail || `Server error (${res.status})`);
+    }
+
+    result.value = await res.json();
+  } catch (err) {
+    error.value = err.message;
+  } finally {
+    splitting.value = false;
+  }
+}
+
+async function extractAudio() {
+  if (!selectedFile.value) return;
+
+  splitting.value = true;
+  error.value = "";
+  result.value = null;
+
+  const formData = new FormData();
+  formData.append("file", selectedFile.value);
+  formData.append("format", audioFormat.value);
+
+  try {
+    const res = await fetch(`${apiBase}/media/extract-audio`, {
       method: "POST",
       body: formData,
     });

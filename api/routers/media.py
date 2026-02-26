@@ -76,6 +76,45 @@ async def split_media(
     }
 
 
+@router.post("/extract-audio")
+async def extract_audio(
+    file: UploadFile = File(...),
+    format: str = Form("mp3"),
+):
+    """Upload a media file and extract its audio track."""
+    UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+
+    upload_id = uuid.uuid4()
+    upload_path = UPLOADS_DIR / f"{upload_id}_{file.filename}"
+
+    content = await file.read()
+    with open(upload_path, "wb") as f:
+        f.write(content)
+
+    original_size = os.path.getsize(upload_path)
+
+    try:
+        job_id, part = splitter.extract_audio(
+            str(upload_path), output_format=format, original_filename=file.filename,
+        )
+    except Exception as e:
+        logger.error(f"Failed to extract audio: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to extract audio: {e}")
+    finally:
+        upload_path.unlink(missing_ok=True)
+
+    return {
+        "job_id": job_id,
+        "original_filename": file.filename,
+        "original_size_bytes": original_size,
+        "format": format,
+        "filename": part.filename,
+        "size_bytes": part.size_bytes,
+        "duration_seconds": part.duration_seconds,
+        "download_url": f"/media/download/{job_id}/{part.filename}",
+    }
+
+
 @router.get("/download/{job_id}/{filename}")
 async def download_part(job_id: str, filename: str):
     """Download a split file part."""

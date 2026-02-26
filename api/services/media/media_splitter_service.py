@@ -89,6 +89,39 @@ class MediaSplitterService:
         parts = self._split_by_segment_secs(file_path, segment_secs, original_name, output_dir)
         return job_id, parts
 
+    def extract_audio(
+        self, file_path: str, output_format: str = "mp3", original_filename: str | None = None,
+    ) -> tuple[str, PartInfo]:
+        """Extract audio track from a media file."""
+        job_id, output_dir = self._make_output_dir()
+        original_name = original_filename or Path(file_path).name
+        stem = Path(original_name).stem
+        out_name = f"{stem}.{output_format}"
+        out_path = output_dir / out_name
+
+        (
+            ffmpeg
+            .input(file_path)
+            .output(str(out_path), vn=None)
+            .overwrite_output()
+            .run(quiet=True)
+        )
+
+        duration = 0.0
+        try:
+            out_probe = ffmpeg.probe(str(out_path))
+            duration = float(out_probe["format"]["duration"])
+        except Exception:
+            pass
+
+        part = PartInfo(
+            filename=out_name,
+            size_bytes=os.path.getsize(out_path),
+            duration_seconds=round(duration, 2),
+        )
+        logger.info(f"Extracted audio to {out_path}")
+        return job_id, part
+
     def split_by_size(
         self, file_path: str, target_size_mb: float, original_filename: str | None = None,
     ) -> tuple[str, list[PartInfo]]:

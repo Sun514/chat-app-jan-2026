@@ -4,6 +4,7 @@ import InvestigationPage from "./pages/InvestigationPageDetails.vue";
 import DocumentCollectionsPage from "./pages/DocumentCollectionsPage.vue";
 import AuditMetricsPage from "./pages/AuditMetricsPage.vue";
 import ChatPage from "./pages/ChatPage.vue";
+import ImprovedChatPage from "./pages/ImprovedChatPage.vue";
 import MediaSplitterPage from "./pages/MediaSplitterPage.vue";
 
 const router = createRouter({
@@ -16,6 +17,14 @@ const router = createRouter({
       meta: {
         headerTitle: "Chat",
         headerSubtitle: "Ollama-powered AI assistant",
+      },
+    },
+    {
+      path: "/improved-chat",
+      component: ImprovedChatPage,
+      meta: {
+        headerTitle: "Improved chat",
+        headerSubtitle: "Sources, conversation, and outputs side by side",
       },
     },
     {

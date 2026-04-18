@@ -139,6 +139,7 @@
 <script setup>
 import { ref, watch } from "vue";
 import PageShell from "../components/PageShell.vue";
+import { formatBytes, formatDuration } from "../utils/format.js";
 import FileUpload from "primevue/fileupload";
 import SelectButton from "primevue/selectbutton";
 import InputNumber from "primevue/inputnumber";
@@ -268,15 +269,4 @@ function reset() {
   uploadKey.value++;
 }
 
-function formatBytes(bytes) {
-  if (bytes < 1024) return bytes + " B";
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-  return (bytes / (1024 * 1024)).toFixed(1) + " MB";
-}
-
-function formatDuration(seconds) {
-  const m = Math.floor(seconds / 60);
-  const s = Math.round(seconds % 60);
-  return m > 0 ? `${m}m ${s}s` : `${s}s`;
-}
 </script>

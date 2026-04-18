@@ -124,6 +124,7 @@ import FileUpload from "primevue/fileupload";
 import InputText from "primevue/inputtext";
 import Textarea from "primevue/textarea";
 import PageShell from "../components/PageShell.vue";
+import { formatBytes } from "../utils/format.js";
 import {
   state,
   createCollection,
@@ -147,13 +148,6 @@ const totalFiles = computed(() =>
   state.items.reduce((sum, collection) => sum + collection.files.length, 0),
 );
 
-const formatBytes = (value) => {
-  if (!value && value !== 0) return "";
-  if (value < 1024) return `${value} B`;
-  const kb = value / 1024;
-  if (kb < 1024) return `${kb.toFixed(1)} KB`;
-  return `${(kb / 1024).toFixed(1)} MB`;
-};
 
 const create = () => {
   if (!form.name.trim()) return;

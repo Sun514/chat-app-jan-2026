@@ -42,6 +42,32 @@
               </div>
             </div>
 
+            <!-- Tool result -->
+            <div
+              v-else-if="msg.role === 'tool'"
+              class="flex gap-3 items-start"
+            >
+              <div
+                class="shrink-0 w-8 h-8 rounded-[10px] bg-(--teal) text-white grid place-items-center text-[0.6rem] font-bold mt-0.5"
+                title="Tool result"
+              >
+                ⚙
+              </div>
+              <div
+                class="flex-1 min-w-0 border border-[rgba(12,17,24,0.1)] rounded-xl bg-[rgba(12,17,24,0.02)] px-3 py-2"
+              >
+                <div
+                  class="text-[0.7rem] font-semibold tracking-[0.05em] uppercase text-(--muted) mb-1"
+                >
+                  {{ msg.name }}
+                </div>
+                <pre
+                  class="m-0 text-[0.78rem] text-(--ink) font-mono whitespace-pre-wrap wrap-break-word leading-[1.55] max-h-72 overflow-y-auto"
+                  >{{ msg.content }}</pre
+                >
+              </div>
+            </div>
+
             <!-- Assistant message -->
             <div v-else class="flex gap-3 items-start">
               <div
@@ -50,6 +76,32 @@
                 AI
               </div>
               <div class="flex-1 min-w-0">
+                <!-- Tool call chips -->
+                <div
+                  v-if="msg.toolCalls && msg.toolCalls.length > 0"
+                  class="flex flex-wrap gap-1.5 mb-2"
+                >
+                  <span
+                    v-for="tc in msg.toolCalls"
+                    :key="tc.id || tc.name"
+                    class="inline-flex items-center gap-1.5 px-2 py-[0.25rem] rounded-full text-[0.72rem] font-medium border"
+                    :class="
+                      tc.status === 'running'
+                        ? 'border-[rgba(255,106,0,0.3)] bg-[rgba(255,106,0,0.08)] text-(--accent)'
+                        : 'border-[rgba(12,17,24,0.12)] bg-[rgba(12,17,24,0.04)] text-(--ink)'
+                    "
+                  >
+                    <span
+                      class="w-1.5 h-1.5 rounded-full"
+                      :class="
+                        tc.status === 'running'
+                          ? 'bg-(--accent) think-dot-pulsing'
+                          : 'bg-(--teal)'
+                      "
+                    ></span>
+                    {{ tc.name }}
+                  </span>
+                </div>
                 <!-- Thinking block -->
                 <div
                   v-if="msg.thinking || msg.streamingThinking"
@@ -201,18 +253,29 @@
           </Transition>
 
           <!-- Input textarea -->
-          <textarea
-            ref="inputEl"
-            v-model="input"
-            placeholder="Message…"
-            rows="1"
-            class="w-full resize-none bg-transparent border-none outline-none text-[0.9rem] text-(--ink) leading-relaxed max-h-50 overflow-y-auto placeholder:text-(--muted) disabled:opacity-60"
-            :disabled="isStreaming"
-            @keydown.enter.exact.prevent="send"
-            @input="autoResize"
-            @focus="inputFocused = true"
-            @blur="inputFocused = false"
-          ></textarea>
+          <div class="relative">
+            <textarea
+              ref="inputEl"
+              v-model="input"
+              placeholder="Message… (type @ for workflows)"
+              rows="1"
+              class="w-full resize-none bg-transparent border-none outline-none text-[0.9rem] text-(--ink) leading-relaxed max-h-50 overflow-y-auto placeholder:text-(--muted) disabled:opacity-60"
+              :disabled="isStreaming"
+              @keydown="onInputKeydown"
+              @input="onInputEvent"
+              @click="updateMention"
+              @keyup="updateMention"
+              @focus="inputFocused = true"
+              @blur="inputFocused = false"
+            ></textarea>
+            <MentionMenu
+              :open="mentionOpen"
+              :items="mentionItems"
+              :active-index="mentionIndex"
+              @select="selectMention"
+              @hover="(i) => (mentionIndex = i)"
+            />
+          </div>
 
           <!-- Bottom toolbar -->
           <div
@@ -342,11 +405,21 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, nextTick } from "vue";
+import { ref, reactive, onMounted, nextTick, computed } from "vue";
+import { useRouter } from "vue-router";
 import { settings, persistSettings } from "../stores/chat.js";
+import {
+  filterWorkflows,
+  getToolSchemas,
+  dispatchTool,
+} from "../stores/workflows.js";
 import PageShell from "../components/PageShell.vue";
+import MentionMenu from "../components/MentionMenu.vue";
 import hljs from "highlight.js";
 import "highlight.js/styles/github-dark.css";
+
+const router = useRouter();
+const MAX_TOOL_ITERATIONS = 4;
 
 // ── State ────────────────────────────────────────────────────────────────────
 
@@ -363,6 +436,13 @@ const modelsError = ref("");
 const settingsOpen = ref(false);
 const activeModel = ref(settings.model);
 const endpointDraft = ref(settings.endpoint);
+
+// Mention menu state
+const mentionOpen = ref(false);
+const mentionQuery = ref("");
+const mentionIndex = ref(0);
+const mentionStart = ref(-1); // index of `@` in input.value
+const mentionItems = computed(() => filterWorkflows(mentionQuery.value));
 
 const scrollEl = ref(null);
 const bottomEl = ref(null);
@@ -508,15 +588,38 @@ function stopStream() {
 
 // ── Send ──────────────────────────────────────────────────────────────────────
 
-async function send() {
-  const text = input.value.trim();
-  if (!text || isStreaming.value) return;
+// Convert internal message → OpenAI chat-completion payload format.
+function toApiMessage(m) {
+  if (m.role === "tool") {
+    return { role: "tool", tool_call_id: m.tool_call_id, content: m.content };
+  }
+  if (m.role === "assistant" && m.toolCalls?.length) {
+    return {
+      role: "assistant",
+      content: m.content || "",
+      tool_calls: m.toolCalls.map((tc) => ({
+        id: tc.id,
+        type: "function",
+        function: { name: tc.name, arguments: tc.args || "{}" },
+      })),
+    };
+  }
+  return { role: m.role, content: m.content };
+}
 
-  const userMsg = { id: crypto.randomUUID(), role: "user", content: text };
-  messages.value.push(userMsg);
-  input.value = "";
-  nextTick(autoResize);
+function accumulateToolCalls(acc, deltaCalls) {
+  for (const dc of deltaCalls) {
+    const i = dc.index ?? 0;
+    if (!acc[i]) {
+      acc[i] = { id: "", name: "", args: "", status: "pending", result: "" };
+    }
+    if (dc.id) acc[i].id = dc.id;
+    if (dc.function?.name) acc[i].name += dc.function.name;
+    if (dc.function?.arguments) acc[i].args += dc.function.arguments;
+  }
+}
 
+async function runChatTurn() {
   const assistantMsg = reactive({
     id: crypto.randomUUID(),
     role: "assistant",
@@ -525,65 +628,63 @@ async function send() {
     streamingThinking: false,
     thinkingExpanded: false,
     streaming: true,
+    toolCalls: [],
   });
   messages.value.push(assistantMsg);
   scrollToBottom();
 
-  isStreaming.value = true;
-  streamError.value = "";
   abortController = new AbortController();
-
   const thinkState = createThinkState();
   let hasExplicitThinking = false;
 
-  try {
-    // Build conversation history (exclude current streaming placeholder)
-    const history = messages.value
-      .filter((m) => m.id !== assistantMsg.id)
-      .map((m) => ({ role: m.role, content: m.content }));
+  // Build history excluding the placeholder.
+  const history = messages.value
+    .filter((m) => m.id !== assistantMsg.id)
+    .map(toApiMessage);
 
-    const baseBody = {
-      model: activeModel.value,
-      messages: history,
-      stream: true,
-    };
+  const baseBody = {
+    model: activeModel.value,
+    messages: history,
+    stream: true,
+    tools: getToolSchemas(),
+  };
 
-    const runRequest = (includeThink) =>
-      fetch(`${settings.endpoint}/v1/chat/completions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(
-          includeThink ? { ...baseBody, think: true } : baseBody,
-        ),
-        signal: abortController.signal,
-      });
+  const runRequest = (includeThink) =>
+    fetch(`${settings.endpoint}/v1/chat/completions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(
+        includeThink ? { ...baseBody, think: true } : baseBody,
+      ),
+      signal: abortController.signal,
+    });
 
-    let res = await runRequest(true);
-    if (!res.ok) {
-      const errText = await res.text().catch(() => `HTTP ${res.status}`);
-      if (shouldRetryWithoutThink(res.status, errText)) {
-        res = await runRequest(false);
-      } else {
-        throw new Error(errText || `HTTP ${res.status}`);
-      }
-    }
-
-    if (!res.ok) {
-      const errText = await res.text().catch(() => `HTTP ${res.status}`);
+  let res = await runRequest(true);
+  if (!res.ok) {
+    const errText = await res.text().catch(() => `HTTP ${res.status}`);
+    if (shouldRetryWithoutThink(res.status, errText)) {
+      res = await runRequest(false);
+    } else {
       throw new Error(errText || `HTTP ${res.status}`);
     }
+  }
+  if (!res.ok) {
+    const errText = await res.text().catch(() => `HTTP ${res.status}`);
+    throw new Error(errText || `HTTP ${res.status}`);
+  }
 
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let buf = "";
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buf = "";
 
+  try {
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
 
       buf += decoder.decode(value, { stream: true });
       const lines = buf.split("\n");
-      buf = lines.pop(); // keep incomplete line
+      buf = lines.pop();
 
       for (const line of lines) {
         const trimmed = line.trim();
@@ -608,15 +709,17 @@ async function send() {
           assistantMsg.streamingThinking = true;
         }
 
+        if (delta.tool_calls) {
+          accumulateToolCalls(assistantMsg.toolCalls, delta.tool_calls);
+        }
+
         if (delta.content != null) {
           if (hasExplicitThinking) {
-            // Thinking phase ended — content is the pure response.
             if (delta.content.length > 0) {
               assistantMsg.streamingThinking = false;
               assistantMsg.content += delta.content;
             }
           } else {
-            // Parse <think>/<thinking> tags out of the content stream.
             processDelta(thinkState, delta.content);
             assistantMsg.thinking = thinkState.thinking;
             assistantMsg.content = thinkState.content;
@@ -628,23 +731,71 @@ async function send() {
       }
     }
 
-    // Flush any remaining buffered tag characters
     if (!hasExplicitThinking) {
       flushThinkState(thinkState);
       assistantMsg.thinking = thinkState.thinking;
       assistantMsg.content = thinkState.content;
     }
-  } catch (err) {
-    if (err.name !== "AbortError") {
-      streamError.value = err.message || "Stream failed";
-      messages.value = messages.value.filter((m) => m.id !== assistantMsg.id);
-    }
   } finally {
     assistantMsg.streaming = false;
     assistantMsg.streamingThinking = false;
     if (assistantMsg.thinking) assistantMsg.thinkingExpanded = false;
-    isStreaming.value = false;
     abortController = null;
+  }
+
+  return assistantMsg;
+}
+
+async function send() {
+  const text = input.value.trim();
+  if (!text || isStreaming.value) return;
+
+  messages.value.push({
+    id: crypto.randomUUID(),
+    role: "user",
+    content: text,
+  });
+  input.value = "";
+  mentionOpen.value = false;
+  nextTick(autoResize);
+
+  isStreaming.value = true;
+  streamError.value = "";
+
+  try {
+    for (let iter = 0; iter < MAX_TOOL_ITERATIONS; iter++) {
+      const assistantMsg = await runChatTurn();
+      if (!assistantMsg.toolCalls?.length) break;
+
+      // Execute each tool call, push the result as a tool message.
+      for (const tc of assistantMsg.toolCalls) {
+        let parsedArgs = {};
+        try {
+          parsedArgs = tc.args ? JSON.parse(tc.args) : {};
+        } catch {
+          parsedArgs = {};
+        }
+        tc.status = "running";
+        const result = await dispatchTool(tc.name, parsedArgs, { router });
+        tc.status = "done";
+        tc.result = result.summary;
+
+        messages.value.push({
+          id: crypto.randomUUID(),
+          role: "tool",
+          tool_call_id: tc.id,
+          name: tc.name,
+          content: result.summary,
+        });
+      }
+      scrollToBottom();
+    }
+  } catch (err) {
+    if (err.name !== "AbortError") {
+      streamError.value = err.message || "Stream failed";
+    }
+  } finally {
+    isStreaming.value = false;
     scrollToBottom(true);
   }
 }
@@ -687,6 +838,94 @@ function autoResize() {
   if (!el) return;
   el.style.height = "auto";
   el.style.height = Math.min(el.scrollHeight, 200) + "px";
+}
+
+// ── Mention autocomplete ──────────────────────────────────────────────────────
+// Detects an active `@token` based on the cursor position. Token is "active"
+// if the `@` is at the start of input or directly after whitespace, and the
+// cursor sits inside the run of non-space chars that follow it.
+
+function detectMention() {
+  const el = inputEl.value;
+  if (!el) return null;
+  const caret = el.selectionStart;
+  const text = input.value.slice(0, caret);
+  const at = text.lastIndexOf("@");
+  if (at === -1) return null;
+  // `@` must be at start or preceded by whitespace
+  if (at > 0 && !/\s/.test(text[at - 1])) return null;
+  const after = text.slice(at + 1);
+  if (/\s/.test(after)) return null;
+  return { start: at, query: after };
+}
+
+function updateMention() {
+  const m = detectMention();
+  if (!m) {
+    mentionOpen.value = false;
+    return;
+  }
+  mentionOpen.value = true;
+  mentionQuery.value = m.query;
+  mentionStart.value = m.start;
+  if (mentionIndex.value >= mentionItems.value.length) {
+    mentionIndex.value = 0;
+  }
+}
+
+function selectMention(wf) {
+  if (mentionStart.value < 0) return;
+  const before = input.value.slice(0, mentionStart.value);
+  const caret = inputEl.value?.selectionStart ?? input.value.length;
+  const after = input.value.slice(caret);
+  const insert = `@${wf.label} `;
+  input.value = before + insert + after;
+  mentionOpen.value = false;
+  mentionQuery.value = "";
+  mentionStart.value = -1;
+  nextTick(() => {
+    autoResize();
+    const pos = before.length + insert.length;
+    inputEl.value?.setSelectionRange(pos, pos);
+    inputEl.value?.focus();
+  });
+}
+
+function onInputEvent() {
+  autoResize();
+  updateMention();
+}
+
+function onInputKeydown(e) {
+  if (mentionOpen.value && mentionItems.value.length > 0) {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      mentionIndex.value =
+        (mentionIndex.value + 1) % mentionItems.value.length;
+      return;
+    }
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      mentionIndex.value =
+        (mentionIndex.value - 1 + mentionItems.value.length) %
+        mentionItems.value.length;
+      return;
+    }
+    if (e.key === "Enter" || e.key === "Tab") {
+      e.preventDefault();
+      selectMention(mentionItems.value[mentionIndex.value]);
+      return;
+    }
+    if (e.key === "Escape") {
+      e.preventDefault();
+      mentionOpen.value = false;
+      return;
+    }
+  }
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    send();
+  }
 }
 
 // ── Markdown renderer ─────────────────────────────────────────────────────────

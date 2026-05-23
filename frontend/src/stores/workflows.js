@@ -15,7 +15,127 @@ async function apiGet(path) {
   return res.json();
 }
 
+function clamp(value, min, max, fallback) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return fallback;
+  return Math.min(max, Math.max(min, Math.trunc(num)));
+}
+
 export const workflows = [
+  {
+    id: "summarize-documents",
+    label: "summarize",
+    description: "Load attached source documents for summarization",
+    tool: {
+      type: "function",
+      function: {
+        name: "prepare_document_summary",
+        description:
+          "Load the currently attached source documents so the assistant can " +
+          "write a summary grounded in their content.",
+        parameters: {
+          type: "object",
+          properties: {
+            focus: {
+              type: "string",
+              description:
+                "Optional summary focus, for example 'executive summary' or 'key risks'.",
+            },
+            max_documents: {
+              type: "integer",
+              default: 3,
+              minimum: 1,
+              maximum: 5,
+            },
+            max_chars_per_document: {
+              type: "integer",
+              default: 3000,
+              minimum: 500,
+              maximum: 8000,
+            },
+          },
+        },
+      },
+    },
+    async run({ args, attachments }) {
+      const attachedSources = Array.isArray(attachments)
+        ? attachments.filter(
+            (att) => att.kind === "library" || att.kind === "collection",
+          )
+        : [];
+
+      if (attachedSources.length === 0) {
+        return {
+          summary:
+            "No source documents are attached. Attach items from Source Collection or Knowledge Profiles, then run summarize again.",
+          data: { attached_count: 0 },
+          view: "json",
+        };
+      }
+
+      const focus = String(args.focus || "").trim();
+      const maxDocuments = clamp(args.max_documents, 1, 5, 3);
+      const maxCharsPerDocument = clamp(
+        args.max_chars_per_document,
+        500,
+        8000,
+        3000,
+      );
+      const selected = attachedSources.slice(0, maxDocuments);
+
+      const documents = await Promise.all(
+        selected.map(async (att) => {
+          if (att.kind === "library") {
+            const data = await apiGet(`/documents/${att.id}/context`);
+            const content = (data.context_text || "").slice(0, maxCharsPerDocument);
+            return {
+              kind: att.kind,
+              id: att.id,
+              name: att.name,
+              content,
+              chunk_count: data.chunk_count || 0,
+            };
+          }
+
+          return {
+            kind: att.kind,
+            id: att.id,
+            name: att.name,
+            content:
+              "Knowledge profile attachment selected. This workflow only has metadata access for local knowledge profile files.",
+            chunk_count: 0,
+          };
+        }),
+      );
+
+      const sections = documents.map((doc, index) => {
+        const header = `[${index + 1}] ${doc.name} (${doc.kind})`;
+        return `${header}\n${doc.content || "(empty)"}`;
+      });
+
+      const summaryLines = [
+        `Prepared ${documents.length} attached source${documents.length === 1 ? "" : "s"} for summarization.`,
+      ];
+      if (focus) {
+        summaryLines.push(`Focus: ${focus}`);
+      }
+      summaryLines.push(
+        "Use the source excerpts below to write the final summary for the user.",
+      );
+      const preparedContent = `${summaryLines.join("\n")}\n\n${sections.join("\n\n")}`;
+
+      return {
+        summary: summaryLines.join("\n"),
+        data: {
+          focus,
+          attached_count: attachedSources.length,
+          documents,
+          content: preparedContent,
+        },
+        view: "text",
+      };
+    },
+  },
   {
     id: "search-documents",
     label: "search",

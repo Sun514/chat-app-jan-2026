@@ -393,8 +393,11 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
+                <path d="M8 12h5" />
+                <path d="M10.5 9.5v5" />
+                <path
+                  d="M17 14a4 4 0 0 0 1-2.65C18 7.29 14.87 4 11 4s-7 3.29-7 7.35S7.13 18.7 11 18.7c.8 0 1.58-.14 2.31-.4L18 20l-1.24-4.23A7.6 7.6 0 0 0 17 14z"
+                />
               </svg>
             </button>
           </div>
@@ -890,7 +893,10 @@ async function runToolLoop() {
           parsedArgs = {};
         }
         tc.status = "running";
-        const result = await dispatchTool(tc.name, parsedArgs, { router });
+        const result = await dispatchTool(tc.name, parsedArgs, {
+          router,
+          attachments: props.attachments,
+        });
         tc.status = "done";
         tc.result = result.summary;
 

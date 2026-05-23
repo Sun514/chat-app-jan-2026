@@ -208,18 +208,10 @@
           No documents uploaded yet. Click <strong>Upload</strong> or drag files
           here.
         </p>
-        <button
+        <div
           v-for="doc in libraryDocs"
           :key="doc.id"
-          type="button"
-          class="w-full flex items-start gap-2 px-2 py-2 rounded-lg cursor-pointer text-left bg-transparent border-none transition-colors duration-100 hover:bg-[rgba(12,17,24,0.04)]"
-          @click="
-            $emit('preview', {
-              kind: 'library',
-              id: doc.id,
-              name: doc.filename,
-            })
-          "
+          class="w-full flex items-start gap-2 px-2 py-2 rounded-lg transition-colors duration-100 hover:bg-[rgba(12,17,24,0.04)]"
         >
           <input
             type="checkbox"
@@ -227,15 +219,50 @@
             :checked="isAttached('library', doc.id)"
             @click.stop="toggle('library', doc.id, doc.filename)"
           />
-          <div class="flex-1 min-w-0">
+          <button
+            type="button"
+            class="flex-1 min-w-0 text-left cursor-pointer bg-transparent border-none p-0"
+            @click="
+              $emit('preview', {
+                kind: 'library',
+                id: doc.id,
+                name: doc.filename,
+              })
+            "
+          >
             <div class="text-[0.82rem] text-(--ink) truncate">
               {{ doc.filename }}
             </div>
             <div class="text-[0.7rem] text-(--muted)">
               {{ doc.file_type }} · {{ formatBytes(doc.file_size) }}
             </div>
-          </div>
-        </button>
+          </button>
+          <button
+            type="button"
+            class="shrink-0 inline-flex items-center justify-center w-7 h-7 mt-0.5 rounded-md border border-[rgba(12,17,24,0.08)] bg-white text-(--muted) cursor-pointer transition-colors hover:text-red-600 hover:bg-[rgba(220,38,38,0.05)] disabled:opacity-50 disabled:cursor-default"
+            :title="deletingDocs[doc.id] ? 'Deleting…' : 'Delete document'"
+            :disabled="deletingDocs[doc.id]"
+            @click.stop="deleteLibraryDoc(doc)"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+              <line x1="10" y1="11" x2="10" y2="17" />
+              <line x1="14" y1="11" x2="14" y2="17" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <!-- Collections -->
@@ -296,13 +323,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { state as collectionsState } from "../../stores/documentCollections.js";
 import { formatBytes } from "../../utils/format.js";
 
 const props = defineProps({
   attachments: { type: Array, default: () => [] },
   autoAttachUploads: { type: Boolean, default: true },
+  refreshToken: { type: Number, default: 0 },
 });
 const emit = defineEmits(["attach", "detach", "preview"]);
 
@@ -318,14 +346,15 @@ const fileInputEl = ref(null);
 const uploads = ref([]);
 const dragDepth = ref(0);
 const dragActive = ref(false);
+const deletingDocs = ref({});
 
 const collections = computed(() => collectionsState.items);
 
 const tabs = computed(() => [
-  { id: "library", label: "Library", count: libraryDocs.value.length },
+  { id: "library", label: "Source Collection", count: libraryDocs.value.length },
   {
     id: "collections",
-    label: "Collections",
+    label: "Knowledge Profiles",
     count: collections.value.reduce((n, c) => n + c.files.length, 0),
   },
 ]);
@@ -526,6 +555,47 @@ function clearFinishedUploads() {
   );
 }
 
+async function deleteLibraryDoc(doc) {
+  if (!doc?.id) return;
+  const confirmed = window.confirm(`Delete "${doc.filename}" from Library?`);
+  if (!confirmed) return;
+
+  deletingDocs.value = { ...deletingDocs.value, [doc.id]: true };
+  libraryError.value = "";
+
+  try {
+    const res = await fetch(`${apiBase}/documents/${doc.id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) {
+      let message = `HTTP ${res.status}`;
+      try {
+        const body = await res.json();
+        if (body?.detail) message = body.detail;
+      } catch {
+        // keep fallback
+      }
+      throw new Error(message);
+    }
+
+    if (isAttached("library", doc.id)) {
+      emit("detach", {
+        kind: "library",
+        id: doc.id,
+        name: doc.filename,
+      });
+    }
+
+    libraryDocs.value = libraryDocs.value.filter((item) => item.id !== doc.id);
+  } catch (err) {
+    libraryError.value = `Failed to delete document: ${err.message}`;
+  } finally {
+    const next = { ...deletingDocs.value };
+    delete next[doc.id];
+    deletingDocs.value = next;
+  }
+}
+
 // ── Drag and drop ─────────────────────────────────────────────────────────────
 // dragenter/leave fire for child elements too, so we use a depth counter.
 
@@ -553,6 +623,13 @@ onMounted(() => {
   loadLibrary();
   loadSupportedTypes();
 });
+
+watch(
+  () => props.refreshToken,
+  () => {
+    loadLibrary();
+  },
+);
 </script>
 
 <style scoped>

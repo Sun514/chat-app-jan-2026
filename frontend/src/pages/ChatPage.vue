@@ -776,7 +776,10 @@ async function send() {
           parsedArgs = {};
         }
         tc.status = "running";
-        const result = await dispatchTool(tc.name, parsedArgs, { router });
+        const result = await dispatchTool(tc.name, parsedArgs, {
+          router,
+          attachments: [],
+        });
         tc.status = "done";
         tc.result = result.summary;
 
